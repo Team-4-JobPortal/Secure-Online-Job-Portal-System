@@ -6,7 +6,7 @@
 
 \# 🛑 Git error logfile
 
-1\. GitError - \[visit](ErrorFile/GitError)
+1\. GitError - [visit](ErrorFile/GitError)
 
 ```git
 
@@ -22,6 +22,6 @@
 
 \# 🛑 Project Error  file
 
-1\. Project - \[visit](ErrorFile/ProjectError)
+1\. Project - [visit](ErrorFile/ProjectError)
 
 
