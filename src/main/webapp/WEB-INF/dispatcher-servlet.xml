@@ -14,7 +14,7 @@
         http://www.springframework.org/schema/mvc
         http://www.springframework.org/schema/mvc/spring-mvc.xsd">
  
-    <context:component-scan base-package="com.app" />
+    <context:component-scan base-package="com.example" />
  
     <mvc:annotation-driven />
  
@@ -23,13 +23,13 @@
         <property name="driverClassName" value="org.postgresql.Driver" />
         <property name="url" value="jdbc:postgresql://localhost:5432/testdb" />
         <property name="username" value="postgres" />
-        <property name="password" value="root" />
+        <property name="password" value="Y0ge$#12" />
     </bean>
  
 <!--   Hibernate SessionFactory -->
     <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
-        <property name="packagesToScan" value="com.app" />
+        <property name="packagesToScan" value="com.example" />
         <property name="hibernateProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>

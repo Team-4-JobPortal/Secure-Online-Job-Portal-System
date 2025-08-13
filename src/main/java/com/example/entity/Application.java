@@ -17,10 +17,36 @@ public class Application {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int application_id;
 	private String status;
-	@ManyToMany
+	@ManyToOne
 	@JoinColumn(name = "candidate_id")
 	private User user;
 	@ManyToOne
 	@JoinColumn(name = "job_id")
 	private Job job;
+	public int getApplication_id() {
+		return application_id;
+	}
+	public void setApplication_id(int application_id) {
+		this.application_id = application_id;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
+	public Job getJob() {
+		return job;
+	}
+	public void setJob(Job job) {
+		this.job = job;
+	}
+	
+	
 }
