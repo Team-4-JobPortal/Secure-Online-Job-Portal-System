@@ -18,6 +18,14 @@
             <artifactId>spring-webmvc</artifactId>
             <version>${spring.version}</version>
         </dependency>
+        
+       <dependency>
+    <groupId>com.fasterxml.jackson.datatype</groupId>
+    <artifactId>jackson-datatype-jsr310</artifactId>
+    <version>2.15.2</version> <!-- or match your Jackson version -->
+</dependency>
+
+
 
         <!-- Spring ORM -->
         <dependency>
@@ -68,5 +76,42 @@
             <artifactId>commons-dbcp2</artifactId>
             <version>2.9.0</version>
         </dependency>
+        
+        <!-- JSP API -->
+    <dependency>
+        <groupId>javax.servlet.jsp</groupId>
+        <artifactId>javax.servlet.jsp-api</artifactId>
+        <version>2.3.3</version>
+        <scope>provided</scope>
+    </dependency>
+
+    <!-- Servlet API -->
+    <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>4.0.1</version>
+        <scope>provided</scope>
+    </dependency>
+
+    <!-- JSTL Core Library -->
+    <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>jstl</artifactId>
+        <version>1.2</version>
+    </dependency>
+
+    <!-- JSTL Implementation (Required for some servers) -->
+    <dependency>
+        <groupId>org.apache.taglibs</groupId>
+        <artifactId>taglibs-standard-impl</artifactId>
+        <version>1.2.5</version>
+    </dependency>
+
+    <!-- JSTL Specification (Required for some servers) -->
+    <dependency>
+        <groupId>org.apache.taglibs</groupId>
+        <artifactId>taglibs-standard-spec</artifactId>
+        <version>1.2.5</version>
+    </dependency>
     </dependencies>
 </project>

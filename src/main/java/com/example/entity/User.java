@@ -1,6 +1,9 @@
 package com.example.entity;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
 
 @Entity
@@ -14,11 +17,13 @@ public class User {
 
     private String role;
 
+    @Column(unique = true, nullable = false)
     private String email;
 
     private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Job> jobs;
 
     // --- Getters & Setters ---

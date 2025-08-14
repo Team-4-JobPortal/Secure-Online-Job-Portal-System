@@ -9,4 +9,14 @@ public class InitialController {
 	public String start() {
 		return "index";
 	}
+	
+	@RequestMapping("/login")
+	public String Login() {
+		return "Login";
+	}
+	
+	@RequestMapping("/register")
+	public String Register() {
+		return "register";
+	}
 }
