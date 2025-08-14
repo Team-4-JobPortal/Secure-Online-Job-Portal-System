@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -600,6 +601,7 @@
             <a href="#" class="logo">
                 <i class="fas fa-briefcase"></i> JobHub
             </a>
+          
             
             <ul class="nav-menu">
                 <li><a href="#home">Home</a></li>
@@ -609,40 +611,47 @@
                 <li><a href="#contact">Contact</a></li>
             </ul>
 
-            <div class="auth-buttons">
-                <!-- Login/Register Buttons (shown when not logged in) -->
-                <div id="authButtons">
-                    <a href="/Secure-Online-Job-Portal-System/login" class="btn btn-outline" onclick="showLogin()">
-                        <i class="fas fa-sign-in-alt"></i> Login
-                    </a>
-                    <a href="/Secure-Online-Job-Portal-System/register" class="btn btn-primary" onclick="showRegister()">
-                        <i class="fas fa-user-plus"></i> Register
-                    </a>
-                </div>
+           
 
-                <!-- User Profile (shown when logged in) -->
-                <div class="user-profile" id="userProfile">
-                    <button class="profile-btn" onclick="toggleDropdown()">
-                        <i class="fas fa-user-circle"></i>
-                        <span id="userName">John Doe</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="profile-dropdown" id="profileDropdown">
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-user"></i> Profile
-                        </a>
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-briefcase"></i> My Jobs
-                        </a>
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-cog"></i> Settings
-                        </a>
-                        <a href="#" class="dropdown-item" onclick="logout()">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </a>
-                    </div>
-                </div>
+<div class="auth-buttons">
+    <!-- Show Login/Register only if not logged in -->
+    <c:if test="${empty loggedInUser}">
+        <div id="authButtons">
+            <a href="/Secure-Online-Job-Portal-System/login" class="btn btn-outline">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </a>
+            <a href="/Secure-Online-Job-Portal-System/register" class="btn btn-primary">
+                <i class="fas fa-user-plus"></i> Register
+            </a>
+        </div>
+    </c:if>
+
+    <!-- Show User Profile + Logout only if logged in -->
+    <c:if test="${not empty loggedInUser}">
+        <div class="user-profile" id="userProfile">
+            <button class="profile-btn" onclick="toggleDropdown()">
+                <i class="fas fa-user-circle"></i>
+                <span id="userName">${loggedInUser}</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="profile-dropdown" id="profileDropdown">
+                <a href="#" class="dropdown-item">
+                    <i class="fas fa-user"></i> Profile
+                </a>
+                <a href="#" class="dropdown-item">
+                    <i class="fas fa-briefcase"></i> My Jobs
+                </a>
+                <a href="#" class="dropdown-item">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+                <a href="/Secure-Online-Job-Portal-System/logout" class="dropdown-item">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
             </div>
+        </div>
+    </c:if>
+</div>
+            
 
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>

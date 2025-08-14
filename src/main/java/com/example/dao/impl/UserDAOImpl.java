@@ -57,4 +57,13 @@ public class UserDAOImpl implements UserDAO {
             getSession().delete(user);
         }
     }
+    
+    public User findByEmail(String email) {
+        String hql = "FROM User WHERE email = :email";
+        return (User) sessionFactory.getCurrentSession()
+                .createQuery(hql)
+                .setParameter("email", email)
+                .uniqueResult();
+    }
+
 }
