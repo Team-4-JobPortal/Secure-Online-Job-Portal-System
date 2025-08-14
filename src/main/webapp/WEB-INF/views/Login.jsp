@@ -1,9 +1,13 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Job Portal - Login</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -11,13 +15,208 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #1e40af;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --text-color: #374151;
+            --light-bg: #f8fafc;
+            --white: #ffffff;
+            --gradient: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
         body {
             font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            padding-top: 70px; /* Account for fixed navbar */
+        }
+
+        /* Navigation */
+        .navbar {
+            background: var(--white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            background: var(--gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-menu a:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            border: 2px solid transparent;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            border: 2px solid transparent;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+        }
+
+        /* User Profile Dropdown */
+        .user-profile {
+            position: relative;
+            display: none;
+        }
+
+        .user-profile.show {
+            display: block;
+        }
+
+        .profile-btn {
+            background: var(--light-bg);
+            border: 2px solid var(--primary-color);
+            border-radius: 50px;
+            padding: 8px 20px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow-hover);
+            padding: 10px 0;
+            min-width: 200px;
+            display: none;
+        }
+
+        .profile-dropdown.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 12px 20px;
+            color: var(--text-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: var(--light-bg);
+            color: var(--primary-color);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-color);
+            cursor: pointer;
         }
 
         .login-container {
@@ -27,7 +226,7 @@
             padding: 50px;
             width: 100%;
             max-width: 450px;
-            margin: 20px;
+            margin: 20px auto;
             position: relative;
             overflow: hidden;
         }
@@ -255,7 +454,44 @@
             background-color: #f0f9f4;
         }
 
+        /* Icon styles */
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 16px;
+        }
+
+        .form-control.with-icon {
+            padding-left: 50px;
+        }
+
+        .role-icon {
+            display: inline-block;
+            margin-right: 8px;
+            font-size: 14px;
+        }
+
         @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .auth-buttons {
+                gap: 10px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
             .login-container {
                 padding: 30px 25px;
                 margin: 10px;
@@ -276,29 +512,69 @@
                 font-size: 14px;
             }
         }
-
-        /* Icon styles */
-        .input-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #666;
-            font-size: 16px;
-        }
-
-        .form-control.with-icon {
-            padding-left: 50px;
-        }
-
-        .role-icon {
-            display: inline-block;
-            margin-right: 8px;
-            font-size: 14px;
-        }
     </style>
 </head>
 <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/Secure-Online-Job-Portal-System/" class="logo">
+                <i class="fas fa-briefcase"></i> JobHub
+            </a>
+          
+            <ul class="nav-menu">
+                <li><a href="/Secure-Online-Job-Portal-System/">Home</a></li>
+                <li><a href="#jobs">Find Jobs</a></li>
+                <li><a href="#companies">Companies</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+
+            <div class="auth-buttons">
+                <!-- Show Login/Register only if not logged in -->
+                <c:if test="${empty sessionScope.loggedInUser}">
+                    <div id="authButtons">
+                        <a href="/Secure-Online-Job-Portal-System/login" class="btn btn-outline">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                        <a href="/Secure-Online-Job-Portal-System/register" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i> Register
+                        </a>
+                    </div>
+                </c:if>
+
+                <!-- Show User Profile + Logout only if logged in -->
+                <c:if test="${not empty sessionScope.loggedInUser}">
+                    <div class="user-profile show" id="userProfile">
+                        <button class="profile-btn" onclick="toggleDropdown()">
+                            <i class="fas fa-user-circle"></i>
+                            <span id="userName">${sessionScope.loggedInUser}</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-user"></i> Profile
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-briefcase"></i> My Jobs
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-cog"></i> Settings
+                            </a>
+                            <a href="/Secure-Online-Job-Portal-System/logout" class="dropdown-item">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </c:if>
+            </div>
+
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
     <div class="login-container">
         <div class="header">
             <h1>Welcome Back</h1>
@@ -378,12 +654,30 @@
             }
         }
 
+        // Toggle profile dropdown
+        function toggleDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const userProfile = document.getElementById('userProfile');
+            if (userProfile && !userProfile.contains(event.target)) {
+                const dropdown = document.getElementById('profileDropdown');
+                if (dropdown) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        });
+
         // Form validation
         function validateForm() {
             let isValid = true;
             const email = document.getElementById('email');
             const password = document.getElementById('password');
             const userRole = document.getElementById('userRole');
+            
 
             // Reset error states
             document.querySelectorAll('.error').forEach(error => error.style.display = 'none');
@@ -437,55 +731,39 @@
         }
 
         // Form submission
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            if (!validateForm()) {
-                return;
+       document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const role = document.getElementById('userRole').value;
+
+    fetch('/Secure-Online-Job-Portal-System/user/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, role })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert(data.message);
+            if (data.role === 'employer') {
+                window.location.href = '/Secure-Online-Job-Portal-System/employerDashboard';
+            } else if (data.role === 'candidate') {
+                window.location.href = '/Secure-Online-Job-Portal-System/candidateDashboard';
             }
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Something went wrong. Please try again.');
+    });
+});
 
-            const loginButton = document.getElementById('loginButton');
-            const loading = document.getElementById('loading');
-            const loginError = document.getElementById('loginError');
-            const loginSuccess = document.getElementById('loginSuccess');
-
-            // Show loading state
-            loginButton.disabled = true;
-            loginButton.textContent = 'Signing In...';
-            loading.style.display = 'block';
-            loginError.style.display = 'none';
-            loginSuccess.style.display = 'none';
-
-            // Simulate API call (replace with actual form submission)
-            setTimeout(() => {
-                // Reset loading state
-                loginButton.disabled = false;
-                loginButton.textContent = 'Sign In';
-                loading.style.display = 'none';
-
-                // For demo purposes - replace with actual authentication
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                const role = document.getElementById('userRole').value;
-
-                // Demo authentication (replace with actual server-side authentication)
-                if (email && password.length >= 6 && role) {
-                    loginSuccess.style.display = 'block';
-                    
-                    // Redirect based on role after 2 seconds
-                    setTimeout(() => {
-                        if (role === 'employer') {
-                            window.location.href = 'employerDashboard.jsp';
-                        } else {
-                            window.location.href = 'candidateDashboard.jsp';
-                        }
-                    }, 2000);
-                } else {
-                    loginError.style.display = 'block';
-                }
-            }, 1500);
-        });
-
+	
         // Real-time validation
         document.getElementById('email').addEventListener('input', function() {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

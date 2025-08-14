@@ -1,6 +1,9 @@
 package com.example.entity;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
 
 @Entity
@@ -14,11 +17,32 @@ public class User {
 
     private String role;
 
+    @Column(unique = true, nullable = false)
     private String email;
+    
+    private String firstName;
+    private String lastName;
 
-    private String password;
+    public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Job> jobs;
 
     // --- Getters & Setters ---
