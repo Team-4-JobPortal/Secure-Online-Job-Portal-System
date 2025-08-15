@@ -50,5 +50,11 @@ public class UserServiceImpl implements UserService{
 		userDAO.delete(id);
 	}
 	
+	@Override
+	public User findByemail(String email) {
+		// add here exception
+		return userDAO.findByEmail(email);
+	}
+	
 }
  

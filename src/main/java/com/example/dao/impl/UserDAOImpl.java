@@ -42,19 +42,38 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public void save(User user) {
+    	// Set back references for bidirectional mapping
+        if ("candidate".equalsIgnoreCase(user.getRole()) && user.getCandidateProfile() != null) {
+            user.getCandidateProfile().setUser(user);
+        }
+        if ("employer".equalsIgnoreCase(user.getRole()) && user.getEmployerProfile() != null) {
+            user.getEmployerProfile().setUser(user);
+        }
+        
         getSession().save(user);
     }
 
     @Override
     public void update(User user) {
+    	
         getSession().update(user);
     }
 
     @Override
     public void delete(int id) {
-        User user = findById(id);
+        User user = getSession().get(User.class, id);
         if (user != null) {
             getSession().delete(user);
         }
     }
+    
+    @Override
+	public User findByEmail(String email) {
+		List<User> users = getSession()
+	            .createQuery("from User u where u.email = :email", User.class)
+	            .setParameter("email", email)
+	            .getResultList();
+
+	    return users.isEmpty() ? null : users.get(0);
+	}
 }

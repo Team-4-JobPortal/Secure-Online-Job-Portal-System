@@ -9,7 +9,7 @@ import com.example.service.ApplicationService;
 import com.example.service.UserService;
  
 @RestController
-@RequestMapping("/application")
+@RequestMapping("/applications")
 public class ApplicationController {
     
     @Autowired
