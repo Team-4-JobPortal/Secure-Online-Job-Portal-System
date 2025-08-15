@@ -24,7 +24,7 @@
         <security:custom-filter ref="jwtFilter" before="FORM_LOGIN_FILTER"/>
         <security:intercept-url pattern="/user/**"  access="isAuthenticated()"/><!--  access="hasRole('ADMIN')" -->
         <security:intercept-url pattern="/jobs/**" access="isAuthenticated()"/>
-        <security:intercept-url pattern="/**" access="denyAll"/> 
+       <!--  <security:intercept-url pattern="/**" access="denyAll"/> --> 
         <security:csrf disabled="true"/>
     </security:http>
     

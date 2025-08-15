@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public User findByemail(String email) {
-		
+		// add here exception
 		return userDAO.findByEmail(email);
 	}
 	

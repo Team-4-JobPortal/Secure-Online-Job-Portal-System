@@ -612,7 +612,7 @@
             <div class="auth-buttons">
                 <!-- Login/Register Buttons (shown when not logged in) -->
                 <div id="authButtons">
-                    <a href="#" class="btn btn-outline" onclick="showLogin()">
+                    <a href="Login" class="btn btn-outline" onclick="showLogin()">
                         <i class="fas fa-sign-in-alt"></i> Login
                     </a>
                     <a href="#" class="btn btn-primary" onclick="showRegister()">

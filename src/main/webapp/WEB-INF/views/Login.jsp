@@ -738,16 +738,33 @@
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const role = document.getElementById('userRole').value;
+    
+    
+    //cookie Function
+    
+    function setCookie(name, value, days) {
+    let expires = "";
+    if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    	document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/";
+	}
 
-    fetch('/Secure-Online-Job-Portal-System/user/login', {
+
+    fetch('/Secure-Online-Job-Portal-System/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, role })
+        
     })
     .then(response => response.json())
     .then(data => {
+    		console.log(data)
         if (data.status === 'success') {
-            alert(data.message);
+        	setCookie("token",data.token,1);
+//            console.log(data.token);
             if (data.role === 'employer') {
                 window.location.href = '/Secure-Online-Job-Portal-System/employerDashboard';
             } else if (data.role === 'candidate') {

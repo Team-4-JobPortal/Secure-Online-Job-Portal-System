@@ -9,4 +9,9 @@ public class InitialController {
 	public String start() {
 		return "index";
 	}
+	
+	@RequestMapping("/Login")
+	public String LoginPage() {
+		return "Login";
+	}
 }
