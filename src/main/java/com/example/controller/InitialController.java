@@ -30,4 +30,10 @@ public class InitialController {
 	public String ForgetPassword() {
 		return "ForgetPassword";
 	}
+	
+	@RequestMapping("/candidateDashboard")
+	public String CandidateDashBoard() {
+		return "CandidateDashboard";
+	}
+	
 }

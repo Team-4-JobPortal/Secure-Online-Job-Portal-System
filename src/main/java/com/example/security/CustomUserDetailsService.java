@@ -15,16 +15,19 @@ public class CustomUserDetailsService implements UserDetailsService {
     private UserServiceImpl userServiceImpl;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userServiceImpl.findByemail(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userServiceImpl.findByemail(email);
         if (user == null) {
-            throw new UsernameNotFoundException("User not found with email: " + username);
+            throw new UsernameNotFoundException("User not found with email: " + email);
         }
-        // Assuming your User entity stores the hashed password
-        return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(), // hashed password here
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
-        );
+
+        // prepend ROLE_ because Spring Security expects it
+        String role = "ROLE_" + user.getRole().toUpperCase();
+
+        return org.springframework.security.core.userdetails.User
+                .withUsername(user.getEmail())
+                .password(user.getPassword()) // must already be BCrypt encoded in DB
+                .authorities(new SimpleGrantedAuthority(role))
+                .build();
     }
 }

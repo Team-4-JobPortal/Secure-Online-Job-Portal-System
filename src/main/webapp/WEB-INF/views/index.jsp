@@ -509,6 +509,38 @@
             color: var(--primary-color);
         }
 
+        /* Notification styles */
+        .notification {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            z-index: 2000;
+            max-width: 300px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: #10b981;
+        }
+
+        .notification.error {
+            background: #ef4444;
+        }
+
+        .notification.info {
+            background: #3b82f6;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .nav-menu {
@@ -612,19 +644,18 @@
             <div class="auth-buttons">
                 <!-- Login/Register Buttons (shown when not logged in) -->
                 <div id="authButtons">
-                    <a href="/Secure-Online-Job-Portal-System/login" class="btn btn-outline" onclick="showLogin()">
+                    <a href="/Secure-Online-Job-Portal-System/login" class="btn btn-outline">
                         <i class="fas fa-sign-in-alt"></i> Login
                     </a>
-                    <a href="/Secure-Online-Job-Portal-System/register" class="btn btn-primary" onclick="showRegister()">
+                    <a href="/Secure-Online-Job-Portal-System/register" class="btn btn-primary">
                         <i class="fas fa-user-plus"></i> Register
                     </a>
                 </div>
-
                 <!-- User Profile (shown when logged in) -->
                 <div class="user-profile" id="userProfile">
                     <button class="profile-btn" onclick="toggleDropdown()">
                         <i class="fas fa-user-circle"></i>
-                        <span id="userName">John Doe</span>
+                        <span id="userName">Loading...</span>
                         <i class="fas fa-chevron-down"></i>
                     </button>
                     <div class="profile-dropdown" id="profileDropdown">
@@ -661,7 +692,7 @@
                         <a href="#jobs" class="btn btn-primary btn-lg">
                             <i class="fas fa-search"></i> Find Jobs
                         </a>
-                        <a href="#" class="btn btn-outline btn-lg" onclick="showRegister()">
+                        <a href="#" class="btn btn-outline btn-lg">
                             <i class="fas fa-upload"></i> Post Resume
                         </a>
                     </div>
@@ -816,122 +847,7 @@
         </div>
     </footer>
 
-    <script>
-        // Authentication state
-        let isLoggedIn = false;
-        let currentUser = {
-            name: 'John Doe',
-            email: 'john.doe@email.com'
-        };
-
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
-            updateAuthUI();
-            addScrollEffect();
-        });
-
-        // Authentication functions
-        function showLogin() {
-            const email = prompt('Enter your email:');
-            const password = prompt('Enter your password:');
-            
-            if (email && password) {
-                // Simulate login
-                if (email && password.length >= 6) {
-                    isLoggedIn = true;
-                    currentUser.name = email.split('@')[0];
-                    currentUser.email = email;
-                    updateAuthUI();
-                    showNotification('Login successful! Welcome back.', 'success');
-                } else {
-                    showNotification('Invalid credentials. Please try again.', 'error');
-                }
-            }
-        }
-
-        function showRegister() {
-            const name = prompt('Enter your full name:');
-            const email = prompt('Enter your email:');
-            const password = prompt('Create a password (min 6 characters):');
-            
-            if (name && email && password) {
-                if (password.length >= 6) {
-                    isLoggedIn = true;
-                    currentUser.name = name;
-                    currentUser.email = email;
-                    updateAuthUI();
-                    showNotification('Registration successful! Welcome to JobHub.', 'success');
-                } else {
-                    showNotification('Password must be at least 6 characters long.', 'error');
-                }
-            }
-        }
-
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                isLoggedIn = false;
-                currentUser = { name: '', email: '' };
-                updateAuthUI();
-                closeDropdown();
-                showNotification('You have been logged out successfully.', 'info');
-            }
-        }
-
-        function updateAuthUI() {
-            const authButtons = document.getElementById('authButtons');
-            const userProfile = document.getElementById('userProfile');
-            const userName = document.getElementById('userName');
-            
-            if (isLoggedIn) {
-                authButtons.style.display = 'none';
-                userProfile.classList.add('show');
-                userName.textContent = currentUser.name;
-            } else {
-                authButtons.style.display = 'flex';
-                userProfile.classList.remove('show');
-                closeDropdown();
-            }
-        }
-
-        function toggleDropdown() {
-            const dropdown = document.getElementById('profileDropdown');
-            dropdown.classList.toggle('show');
-        }
-
-        function closeDropdown() {
-            const dropdown = document.getElementById('profileDropdown');
-            dropdown.classList.remove('show');
-        }
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const userProfile = document.getElementById('userProfile');
-            if (!userProfile.contains(event.target)) {
-                closeDropdown();
-            }
-        });
-
-        // Notification system
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 90px;
-                right: 20px;
-                padding: 15px 20px;
-                border-radius: 10px;
-                color: white;
-                font-weight: 600;
-                z-index: 2000;
-                animation: slideIn 0.3s ease;
-                max-width: 300px;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            `;
-            
-            switch(type) {
-                case 'success':
-                    notification.style.background = '#10b981';
-                    notification.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
-                    break;
-                case 'error':
-                    notification.style.background =
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+</body>
+</html>

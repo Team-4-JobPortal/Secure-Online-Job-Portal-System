@@ -896,7 +896,7 @@
 
                 // AJAX call to change password
                 $.ajax({
-                    url: '/Secure-Online-Job-Portal-System/users/change-password',
+                    url: '/Secure-Online-Job-Portal-System/auth/change-password',
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({

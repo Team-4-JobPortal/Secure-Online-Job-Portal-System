@@ -8,8 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
+
 import org.springframework.web.bind.annotation.*;
 
 import com.example.entity.User;
@@ -70,6 +69,42 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
     }
+    
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody User req) {
+        User dbUser = userService.findByemail(req.getEmail());
+        if (dbUser == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.singletonMap("message", "Account not found with this email and role."));
+        }
+
+        // Role check
+        if (!dbUser.getRole().equalsIgnoreCase(req.getRole())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Collections.singletonMap("message", "Role does not match for this account."));
+        }
+
+        // Verify old password
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(req.getEmail(), req.getOldPassword())
+            );
+        } catch (BadCredentialsException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Collections.singletonMap("message", "Current password is incorrect."));
+        }
+
+        // Update password
+        userService.updatePassword(dbUser, req.getNewPassword());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "success");
+        response.put("message", "Password changed successfully");
+        return ResponseEntity.ok(response);
+    }
+
+    
+    
 
     
 }

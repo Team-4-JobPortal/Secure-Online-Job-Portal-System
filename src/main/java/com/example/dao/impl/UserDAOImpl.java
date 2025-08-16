@@ -5,6 +5,7 @@ import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,14 @@ import com.example.entity.User;
 @Transactional
 public class UserDAOImpl implements UserDAO {
     
+	
+	private final PasswordEncoder passwordEncoder;
+
+	@Autowired
+	public UserDAOImpl(PasswordEncoder passwordEncoder) {
+	    this.passwordEncoder = passwordEncoder;
+	}
+	
     @Autowired
     private SessionFactory sessionFactory;
 
@@ -42,6 +51,9 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public void save(User user) {
+    	
+    	user.setPassword(passwordEncoder.encode(user.getPassword()));
+        
     	// Set back references for bidirectional mapping
         if ("candidate".equalsIgnoreCase(user.getRole()) && user.getCandidateProfile() != null) {
             user.getCandidateProfile().setUser(user);

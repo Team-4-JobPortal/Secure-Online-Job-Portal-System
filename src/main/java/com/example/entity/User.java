@@ -20,6 +20,13 @@ public class User {
     private String phoneNumber;
     private String email;
     private String password;
+    
+  
+    @Transient
+    private String oldPassword;
+
+    @Transient
+    private String newPassword;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private CandidateProfile candidateProfile;
@@ -82,4 +89,18 @@ public class User {
     public void setEmployerProfile(EmployerProfile employerProfile) {
         this.employerProfile = employerProfile;
     }
+    
+    public String getOldPassword() {
+		return oldPassword;
+	}
+	public void setOldPassword(String oldPassword) {
+		this.oldPassword = oldPassword;
+	}
+	public String getNewPassword() {
+		return password;
+	}
+	public void setNewPassword(String newPassword) {
+		this.password = newPassword;
+	}
+    
 }

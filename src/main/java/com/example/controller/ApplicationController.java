@@ -4,9 +4,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.example.entity.Application;
-import com.example.entity.User;
+
 import com.example.service.ApplicationService;
-import com.example.service.UserService;
  
 @RestController
 @RequestMapping("/applications")
@@ -16,7 +15,7 @@ public class ApplicationController {
     private ApplicationService appService;
     
  
-    @GetMapping
+    @GetMapping("/list")
     public List<Application> listUsers() {
         return appService.findAllApp();
     }
@@ -26,7 +25,7 @@ public class ApplicationController {
     	return appService.findAppById(id);
     }
  
-    @PostMapping
+    @PostMapping("/apply")
     public void saveApp(@RequestBody Application app) {
     	
     	appService.saveApp(app);

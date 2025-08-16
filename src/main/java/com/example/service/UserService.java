@@ -10,5 +10,6 @@ public interface UserService {
     User findByemail(String email);
     void saveUser(User user);
     void updateUser(User user);
+    void updatePassword(User dbUser, String newPassword);
     void deleteUser(int id);
 }

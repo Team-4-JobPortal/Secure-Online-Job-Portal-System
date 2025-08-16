@@ -14,7 +14,7 @@ public class JobController {
     private JobService jobService;
 
     // Employer: Create Job
-    @PostMapping
+    @PostMapping("/postJob")
     public String createJob(@RequestBody Job job) {
         jobService.createJob(job);
         return "Job created successfully!";
@@ -40,7 +40,7 @@ public class JobController {
     }
 
     // Candidate: View All Jobs
-    @GetMapping
+    @GetMapping("/list")
     public List<Job> getAllJobs() {
         return jobService.getAllJobs();
     }

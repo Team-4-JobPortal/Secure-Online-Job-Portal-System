@@ -672,13 +672,14 @@ $(document).ready(function(){
       contentType: 'application/json',
       data: JSON.stringify({email: email, password: password, role: role}),
       dataType: 'json',
+      
       success: function(data){
         if(data.status === 'success'){
           setCookie('token', data.token, 1);
           if(role === 'employer'){
             window.location.href = '/Secure-Online-Job-Portal-System/employerDashboard';
           } else if(role === 'candidate'){
-            window.location.href = '/Secure-Online-Job-Portal-System';
+            window.location.href = '/Secure-Online-Job-Portal-System/candidateDashboard';
           } else {
             alert('Unknown user role.');
           }
