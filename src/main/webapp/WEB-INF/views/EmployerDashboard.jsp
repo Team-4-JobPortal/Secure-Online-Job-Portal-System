@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ page isELIgnored="true" %>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -171,6 +174,12 @@
             box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
         }
 
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .job-card {
             background: #f8f9ff;
             border-radius: 12px;
@@ -310,6 +319,41 @@
             font-weight: 600;
         }
 
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
@@ -335,7 +379,7 @@
         <div class="header-content">
             <div class="logo">🏢 Job Portal - Employer</div>
             <div class="user-info">
-                <span>Welcome, <strong id="employerName">John Doe</strong></span>
+                <span>Welcome, <strong id="employerName"></strong></span>
                 <button class="logout-btn" onclick="logout()">Logout</button>
             </div>
         </div>
@@ -343,10 +387,11 @@
 
     <div class="dashboard-container">
         <div class="dashboard-nav">
-            <button class="nav-tab active" onclick="showTab('overview')">📊 Overview</button>
-            <button class="nav-tab" onclick="showTab('post-job')">➕ Post Job</button>
-            <button class="nav-tab" onclick="showTab('my-jobs')">📝 My Jobs</button>
-            <button class="nav-tab" onclick="showTab('applications')">📋 Applications</button>
+            <button class="nav-tab active" onclick="showTab('overview', event)">📊 Overview</button>
+			<button class="nav-tab" onclick="showTab('post-job', event)">➕ Post Job</button>
+			<button class="nav-tab" onclick="showTab('my-jobs', event)">📝 My Jobs</button>
+			<button class="nav-tab" onclick="showTab('applications', event)">📋 Applications</button>
+
         </div>
 
         <!-- Overview Tab -->
@@ -354,75 +399,80 @@
             <h2 class="section-title">Dashboard Overview</h2>
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-number" id="totalJobs">5</div>
+                    <div class="stat-number" id="totalJobs">0</div>
                     <div class="stat-label">Active Jobs</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number" id="totalApplications">23</div>
+                    <div class="stat-number" id="totalApplications">0</div>
                     <div class="stat-label">Total Applications</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number" id="pendingApplications">12</div>
+                    <div class="stat-number" id="pendingApplications">0</div>
                     <div class="stat-label">Pending Review</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number" id="hiredCandidates">3</div>
+                    <div class="stat-number" id="hiredCandidates">0</div>
                     <div class="stat-label">Hired Candidates</div>
                 </div>
             </div>
 
             <h3>Recent Applications</h3>
             <div id="recentApplications">
-                <!-- Recent applications will be populated here -->
+                <p>No recent applications to display.</p>
             </div>
         </div>
 
         <!-- Post Job Tab -->
         <div id="post-job" class="tab-content">
             <h2 class="section-title">Post New Job</h2>
-            <form id="jobPostForm" method="post" action="PostJobServlet">
-    <div class="form-row">
-        <div class="form-group">
-            <label for="jobTitle">Job Title *</label>
-            <input type="text" id="jobTitle" name="title" class="form-control" required>
-        </div>
-        <div class="form-group">
-            <label for="location">Location *</label>
-            <input type="text" id="location" name="location" class="form-control" required>
-        </div>
-    </div>
-
-    <div class="form-row">
-        <div class="form-group">
-            <label for="minSalary">Minimum Salary</label>
-            <input type="number" id="minSalary" name="min_salary" class="form-control">
-        </div>
-        <div class="form-group">
-            <label for="maxSalary">Maximum Salary</label>
-            <input type="number" id="maxSalary" name="max_salary" class="form-control">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label for="jobDescription">Job Description *</label>
-        <textarea id="jobDescription" name="description" class="form-control" required></textarea>
-    </div>
-
-    <div class="form-group">
-        <label for="applicationDeadline">Application Deadline</label>
-        <input type="date" id="applicationDeadline" name="deadline" class="form-control">
-    </div>
-
-    <button type="submit" class="btn btn-primary">Post Job</button>
-</form>
             
+            <!-- Alert container -->
+            <div id="alertContainer"></div>
+            
+            <form id="jobPostForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="jobTitle">Job Title *</label>
+                        <input type="text" id="jobTitle" name="title" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location *</label>
+                        <input type="text" id="location" name="location" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="minSalary">Minimum Salary</label>
+                        <input type="number" id="minSalary" name="min_salary" class="form-control" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="maxSalary">Maximum Salary</label>
+                        <input type="number" id="maxSalary" name="max_salary" class="form-control" min="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="jobDescription">Job Description *</label>
+                    <textarea id="jobDescription" name="description" class="form-control" required placeholder="Enter detailed job description..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="applicationDeadline">Application Deadline</label>
+                    <input type="date" id="applicationDeadline" name="deadline" class="form-control">
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <span id="submitText">Post Job</span>
+                </button>
+            </form>
         </div>
 
         <!-- My Jobs Tab -->
         <div id="my-jobs" class="tab-content">
             <h2 class="section-title">My Posted Jobs</h2>
             <div id="jobsList">
-                <!-- Jobs will be populated here -->
+                <p>Loading jobs...</p>
             </div>
         </div>
 
@@ -430,83 +480,308 @@
         <div id="applications" class="tab-content">
             <h2 class="section-title">Job Applications</h2>
             <div id="applicationsList">
-                <!-- Applications will be populated here -->
+                <p>Loading applications...</p>
             </div>
         </div>
     </div>
 
-    <script>
-    // Function to switch between tabs
-    function showTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(tab => {
-            tab.classList.remove('active');
-        });
-        document.getElementById(tabId).classList.add('active');
 
-        document.querySelectorAll('.nav-tab').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        event.target.classList.add('active');
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+let authToken = null;
+
+$(document).ready(function() {
+    authToken = getCookie('token') || localStorage.getItem('authToken');
+    if (!authToken) {
+        alert('Please login first!');
+        window.location.href = '/Secure-Online-Job-Portal-System/login';
+        return;
     }
+    loadUserInfo(); 
+    loadDashboardData();
+    setMinDate();
 
-    // Handle job post form submission
-    document.getElementById("jobPostForm").addEventListener("submit", function (e) {
-        e.preventDefault(); // stop page reload
-
-        // Collect form data
-        const jobData = {
-            title: document.getElementById("jobTitle").value,
-            type: document.getElementById("jobType").value,
-            location: document.getElementById("location").value,
-            experience: document.getElementById("experienceLevel").value,
-            minSalary: document.getElementById("minSalary").value,
-            maxSalary: document.getElementById("maxSalary").value,
-            description: document.getElementById("jobDescription").value,
-            requirements: document.getElementById("requirements").value,
-            benefits: document.getElementById("benefits").value,
-            deadline: document.getElementById("applicationDeadline").value
-        };
-
-        // Add job to "My Jobs" list dynamically
-        const jobsList = document.getElementById("jobsList");
-
-        const jobCard = document.createElement("div");
-        jobCard.classList.add("job-card");
-        jobCard.innerHTML = `
-            <div class="job-title">${jobData.title} (${jobData.type})</div>
-            <div class="job-details">
-                <div class="job-detail">📍 ${jobData.location}</div>
-                <div class="job-detail">💼 ${jobData.experience}</div>
-                <div class="job-detail">💰 ${jobData.minSalary || "N/A"} - ${jobData.maxSalary || "N/A"}</div>
-                <div class="job-detail">⏰ Deadline: ${jobData.deadline || "Not specified"}</div>
-            </div>
-            <p>${jobData.description}</p>
-            <p><strong>Requirements:</strong> ${jobData.requirements}</p>
-            <p><strong>Benefits:</strong> ${jobData.benefits || "Not specified"}</p>
-            <div class="job-actions">
-                <button class="btn btn-small btn-info">View</button>
-                <button class="btn btn-small btn-danger" onclick="this.parentElement.parentElement.remove()">Delete</button>
-            </div>
-        `;
-
-        jobsList.appendChild(jobCard);
-
-        // Reset form
-        this.reset();
-
-        // Success message
-        alert("✅ Job posted successfully! Check 'My Jobs' tab.");
-
-        // Switch to My Jobs tab
-        showTab("my-jobs");
+    $("#jobPostForm").submit(function(e) {
+        e.preventDefault();
+        postJob();
     });
+});
 
-    // Fake logout
-    function logout() {
-        alert("You have been logged out!");
-        window.location.href = "login.jsp"; // or any login page
+function showTab(tabId, event) {
+    $(".tab-content").removeClass("active");
+    $(".nav-tab").removeClass("active");
+
+    $("#" + tabId).addClass("active");
+    if (event) $(event.target).addClass("active");
+
+    if (tabId === 'my-jobs') {
+        loadMyJobs();
+    } else if (tabId === 'applications') {
+        loadApplications();
+    } else if (tabId === 'overview') {
+        loadDashboardData();
     }
+}
+
+function loadUserInfo() {
+    $.ajax({
+        url: "/Secure-Online-Job-Portal-System/auth/user/me",
+        method: "GET",
+        headers: { "Authorization": "Bearer " + authToken },
+        success: function(data) {
+            let displayName = data.firstName && data.lastName 
+                ? data.firstName + " " + data.lastName 
+                : data.email; // fallback if name missing
+            $("#employerName").text(displayName);
+        },
+        error: function() {
+            $("#employerName").text("Employer");
+        }
+    });
+}
+
+
+// Set minimum date to today
+function setMinDate() {
+    const today = new Date().toISOString().split('T')[0];
+    $("#applicationDeadline").attr("min", today);
+}
+
+// Job posting
+function postJob() {
+    const submitBtn = $("#submitBtn");
+    const submitText = $("#submitText");
+
+    submitBtn.prop("disabled", true);
+    submitText.html('<span class="loading"></span>Posting Job...');
+    showAlert('', '');
+
+    const minSalary = parseInt($("#minSalary").val()) || 0;
+    const maxSalary = parseInt($("#maxSalary").val()) || 0;
+
+    if (maxSalary > 0 && minSalary > maxSalary) {
+        showAlert('Maximum salary cannot be less than minimum salary!', 'error');
+        resetSubmitButton();
+        return;
+    }
+
+    const jobData = {
+        title: $("#jobTitle").val().trim(),
+        location: $("#location").val().trim(),
+        min_salary: minSalary,
+        max_salary: maxSalary,
+        description: $("#jobDescription").val().trim(),
+        deadline: formatDeadline($("#applicationDeadline").val())
+    };
+
+    $.ajax({
+        url: "/Secure-Online-Job-Portal-System/jobs/postJob",
+        method: "POST",
+        contentType: "application/json",
+        headers: { "Authorization": "Bearer " + authToken },
+        data: JSON.stringify(jobData),
+        success: function() {
+            showAlert('✅ Job posted successfully!', 'success');
+            $("#jobPostForm")[0].reset();
+            setMinDate();
+            loadMyJobs();
+            loadDashboardData();
+            setTimeout(() => showTab('my-jobs'), 2000);
+        },
+        error: function(xhr) {
+            showAlert('❌ ' + (xhr.responseText || 'Failed to post job'), 'error');
+        },
+        complete: resetSubmitButton
+    });
+}
+
+function resetSubmitButton() {
+    $("#submitBtn").prop("disabled", false);
+    $("#submitText").html('Post Job');
+}
+
+function formatDeadline(dateString) {
+    return dateString ? dateString + 'T23:59:59Z' : null;
+}
+
+function showAlert(message, type) {
+    const alertContainer = $("#alertContainer");
+    if (!message) {
+        alertContainer.html('');
+        return;
+    }
+    const alertClass = type === 'error' ? 'alert-error' : 'alert-success';
+    alertContainer.html(`<div class="alert ${alertClass}">${message}</div>`);
+    if (type === 'success') {
+        setTimeout(() => alertContainer.html(''), 5000);
+    }
+}
+
+function getCookie(name) {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return match ? match[2] : null;
+}
+
+// Dashboard data
+function loadDashboardData() {
+    $.ajax({
+        url: "/jobs/employer/stats",
+        method: "GET",
+        headers: { "Authorization": "Bearer " + authToken },
+        success: function(data) {
+            $("#totalJobs").text(data.totalJobs || 0);
+            $("#totalApplications").text(data.totalApplications || 0);
+            $("#pendingApplications").text(data.pendingApplications || 0);
+            $("#hiredCandidates").text(data.hiredCandidates || 0);
+        }
+    });
+}
+
+// My Jobs
+function loadMyJobs() {
+    const jobsList = $("#jobsList");
+    jobsList.html("<p>Loading jobs...</p>");
+
+    $.ajax({
+        url: "/Secure-Online-Job-Portal-System/jobs/currentLoginEmployerJobPosted/list",
+        method: "GET",
+        headers: { "Authorization": "Bearer " + authToken },
+        success: function(jobs) {
+            jobsList.html("");
+            if (!jobs || jobs.length === 0) {
+                jobsList.html("<p>No jobs posted yet. <a href='#' onclick=\"showTab('post-job')\">Post your first job</a>!</p>");
+                return;
+            }
+            jobs.forEach(job => {
+                const salaryRange = job.min_salary && job.max_salary
+                    ? `$${job.min_salary} - $${job.max_salary}`
+                    : job.min_salary ? `From $${job.min_salary}`
+                    : job.max_salary ? `Up to $${job.max_salary}`
+                    : 'Salary negotiable';
+                const deadline = job.deadline ? new Date(job.deadline).toLocaleDateString() : "No deadline";
+                const jobCard = `
+                    <div class="job-card">
+                        <div class="job-title">${escapeHtml(job.title)}</div>
+                        <div class="job-details">
+                            <div class="job-detail">📍 ${escapeHtml(job.location)}</div>
+                            <div class="job-detail">💰 ${salaryRange}</div>
+                            <div class="job-detail">⏰ Deadline: ${deadline}</div>
+                        </div>
+                        <p>${escapeHtml(job.description)}</p>
+                        <div class="job-actions">
+                            <button class="btn btn-info btn-small" onclick="viewApplications(${job.job_id})">View Applications</button>
+                            <button class="btn btn-success btn-small" onclick="editJob(${job.job_id})">Edit</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteJob(${job.job_id})">Delete</button>
+                        </div>
+                    </div>`;
+                jobsList.append(jobCard);
+            });
+        },
+        error: function() {
+            jobsList.html("<p>Error loading jobs. Please try again.</p>");
+        }
+    });
+}
+
+// Applications
+function loadApplications() {
+    const applicationsList = $("#applicationsList");
+    applicationsList.html("<p>Loading applications...</p>");
+
+    $.ajax({
+        url: "/Secure-Online-Job-Portal-System/applications/list",
+        method: "GET",
+        headers: { "Authorization": "Bearer " + authToken },
+        success: function(applications) {
+            applicationsList.html("");
+            if (!applications || applications.length === 0) {
+                applicationsList.html("<p>No applications received yet.</p>");
+                return;
+            }
+            applications.forEach(app => {
+                const appCard = `
+                    <div class="application-card">
+                        <div class="applicant-name">${escapeHtml(app.applicantName)}</div>
+                        <p><strong>Job:</strong> ${escapeHtml(app.jobTitle)}</p>
+                        <p><strong>Applied:</strong> ${formatApplicationDate(app.applicationDate)}</p>
+                        <p><strong>Status:</strong> <span class="application-status status-${app.status.toLowerCase()}">${app.status}</span></p>
+                        <div class="job-actions">
+                            <button class="btn btn-info btn-small" onclick="viewApplication(${app.applicationId})">View Details</button>
+                            ${app.status.toLowerCase() === 'pending' ? `
+                                <button class="btn btn-success btn-small" onclick="updateApplicationStatus(${app.applicationId}, 'accepted')">Accept</button>
+                                <button class="btn btn-danger btn-small" onclick="updateApplicationStatus(${app.applicationId}, 'rejected')">Reject</button>
+                            ` : ''}
+                        </div>
+                    </div>`;
+                applicationsList.append(appCard);
+            });
+        },
+        error: function() {
+            applicationsList.html("<p>Error loading applications. Please try again.</p>");
+        }
+    });
+}
+
+function escapeHtml(text) {
+    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+    return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+function formatApplicationDate(dateString) {
+    if (!dateString) return 'N/A';
+    try { return new Date(dateString).toLocaleDateString(); }
+    catch { return 'Invalid date'; }
+}
+
+function viewApplications(jobId) { alert(`Viewing applications for job ID: ${jobId}`); }
+function editJob(jobId) { alert(`Editing job ID: ${jobId}`); }
+
+function deleteJob(jobId) {
+    if (confirm('Are you sure you want to delete this job?')) {
+        $.ajax({
+            url: `/Secure-Online-Job-Portal-System/jobs/${jobId}`,
+            method: "DELETE",
+            headers: { "Authorization": "Bearer " + authToken },
+            success: function() {
+                alert('Job deleted successfully!');
+                loadMyJobs();
+                loadDashboardData();
+            },
+            error: function() {
+                alert('Error: Failed to delete job');
+            }
+        });
+    }
+}
+
+function viewApplication(applicationId) { alert(`Viewing application ID: ${applicationId}`); }
+
+function updateApplicationStatus(applicationId, status) {
+    $.ajax({
+        url: `/Secure-Online-Job-Portal-System/applications/${applicationId}/status`,
+        method: "PUT",
+        contentType: "application/json",
+        headers: { "Authorization": "Bearer " + authToken },
+        data: JSON.stringify({ status: status }),
+        success: function() {
+            alert(`Application ${status} successfully!`);
+            loadApplications();
+            loadDashboardData();
+        },
+        error: function() {
+            alert(`Failed to ${status} application`);
+        }
+    });
+}
+
+function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+        document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        window.location.href = '/Secure-Online-Job-Portal-System';
+    }
+}
 </script>
+
 
 </body>
 </html>

@@ -21,6 +21,9 @@ public class Application {
     private int application_id;
 
     private String status;
+    
+    @Column(columnDefinition = "TEXT") // longer cover letters allowed
+    private String coverLetter;
 
     @ManyToOne
     @JoinColumn(name = "candidate_id") // foreign key column in Applications table
@@ -61,5 +64,12 @@ public class Application {
 
     public void setJob(Job job) {
         this.job = job;
+    }
+    
+    public String getCoverLetter() {
+        return coverLetter;
+    }
+    public void setCoverLetter(String coverLetter) {
+        this.coverLetter = coverLetter;
     }
 }

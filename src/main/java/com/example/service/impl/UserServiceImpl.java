@@ -62,9 +62,8 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public void updatePassword(User user, String newPassword) {
 	    String encoded = passwordEncoder.encode(newPassword);
-//		String encoded = newPassword;
 	    user.setPassword(encoded);
-	    userDAO.update(user); // use your DAO
+	    userDAO.update(user); 
 	}
 	
 }

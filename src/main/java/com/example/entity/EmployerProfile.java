@@ -1,5 +1,6 @@
 package com.example.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
@@ -18,7 +19,7 @@ public class EmployerProfile {
     @OneToOne
     @MapsId
     @JoinColumn(name = "user_id")
-    @JsonIgnore // prevent infinite recursion
+    @JsonBackReference
     private User user;
 
     // getters and setters

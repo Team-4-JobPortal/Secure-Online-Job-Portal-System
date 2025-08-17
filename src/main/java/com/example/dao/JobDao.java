@@ -10,6 +10,9 @@ public interface JobDao {
     Job get(int id);
 
     List<Job> list();
+    
+    List<Job> findByEmployerEmail(String email);
+
 
     void update(Job job);
 

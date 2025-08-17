@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
-
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.entity.User;
@@ -70,6 +70,8 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
     
+    
+    
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestBody User req) {
         User dbUser = userService.findByemail(req.getEmail());
@@ -105,6 +107,19 @@ public class AuthController {
 
     
     
+
+    @GetMapping("/user/me")
+    public ResponseEntity<Map<String, String>> getCurrentUser(Authentication authentication) {
+        User user = userService.findByemail(authentication.getName());
+
+        Map<String, String> response = new HashMap<>();
+        response.put("email", user.getEmail());
+        response.put("firstName", user.getFirstName());
+        response.put("lastName", user.getLastName());
+
+        return ResponseEntity.ok(response);
+    }
+
 
     
 }

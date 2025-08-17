@@ -1,8 +1,16 @@
 package com.example.controller;
 
+import com.example.entity.Application;
 import com.example.entity.Job;
+import com.example.entity.User;
+import com.example.service.ApplicationService;
 import com.example.service.JobService;
+import com.example.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -12,12 +20,39 @@ public class JobController {
 
     @Autowired
     private JobService jobService;
+    
+    @Autowired
+    private UserService userService;
+    
+    @Autowired
+    private ApplicationService applicationService;
 
-    // Employer: Create Job
+ // Employer: Create Job
     @PostMapping("/postJob")
-    public String createJob(@RequestBody Job job) {
+    public ResponseEntity<?> createJob(@RequestBody Job job, Authentication authentication) {
+        // Get logged-in username from JWT authentication
+        String email = authentication.getName();
+
+        // Fetch user from DB
+        User dbUser = userService.findByemail(email);
+
+        if (dbUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("User not found!");
+        }
+
+        // Check role
+        if (!"employer".equalsIgnoreCase(dbUser.getRole())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Only Employer can post jobs!");
+        }
+
+        // Attach employer (user) to the job
+        job.setUser(dbUser);
+
         jobService.createJob(job);
-        return "Job created successfully!";
+
+        return ResponseEntity.ok("Job created successfully!");
     }
 
     // Employer: Update Job
@@ -60,4 +95,48 @@ public class JobController {
     public Job getJobById(@PathVariable int id) {
         return jobService.getJobById(id);
     }
+    
+    @GetMapping("/currentLoginEmployerJobPosted/list")
+    public List<Job> getMyJobs(Authentication authentication) {
+        String email = authentication.getName(); // logged-in employer’s email
+        return jobService.getJobsByEmployer(email);
+    }
+    
+    @PostMapping("/{jobId}/apply")
+    public ResponseEntity<?> applyForJob(
+            @PathVariable int jobId,
+            @RequestBody Application request,
+            Authentication authentication) {
+
+        String email = authentication.getName();
+        User dbUser = userService.findByemail(email);
+
+        if (dbUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("User not found!");
+        }
+
+        //  Only candidates can apply
+        if (!"candidate".equalsIgnoreCase(dbUser.getRole())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Only Candidates can apply for jobs!");
+        }
+
+        Job job = jobService.getJobById(jobId);
+        if (job == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Job not found!");
+        }
+
+        Application application = new Application();
+        application.setJob(job);
+        application.setUser(dbUser);
+        application.setCoverLetter(request.getCoverLetter());
+        application.setStatus("Pending"); // default status
+
+        applicationService.saveApp(application);
+
+        return ResponseEntity.ok("Application submitted successfully with status Pending!");
+    }
+
 }

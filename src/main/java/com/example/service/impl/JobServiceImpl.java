@@ -42,4 +42,10 @@ public class JobServiceImpl implements JobService {
     public List<Job> searchJobs(String keyword, String location, Integer minSalary, Integer maxSalary) {
         return jobDao.searchJobs(keyword, location, minSalary, maxSalary);
     }
+    
+    @Override
+    public List<Job> getJobsByEmployer(String email) {
+        return jobDao.findByEmployerEmail(email);
+    }
+
 }

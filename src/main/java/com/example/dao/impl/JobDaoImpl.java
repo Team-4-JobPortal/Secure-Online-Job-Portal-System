@@ -31,6 +31,16 @@ public  class JobDaoImpl implements JobDao {
                 .createQuery("from Job", Job.class)
                 .list();
     }
+    
+    @Override
+    public List<Job> findByEmployerEmail(String email) {
+        String hql = "FROM Job j WHERE j.user.email = :email";
+        return sessionFactory.getCurrentSession()
+                .createQuery(hql, Job.class)
+                .setParameter("email", email)
+                .list();
+    }
+
 
     @Override
     public void update(Job job) {

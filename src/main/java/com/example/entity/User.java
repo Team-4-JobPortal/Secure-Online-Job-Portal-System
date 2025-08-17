@@ -2,6 +2,7 @@ package com.example.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 
@@ -18,6 +19,8 @@ public class User {
     private String firstName;
     private String lastName;
     private String phoneNumber;
+    
+    @Column(unique = true, nullable = false)
     private String email;
     private String password;
     
@@ -31,7 +34,8 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private CandidateProfile candidateProfile;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
     private EmployerProfile employerProfile;
 
     // getters and setters
@@ -97,10 +101,10 @@ public class User {
 		this.oldPassword = oldPassword;
 	}
 	public String getNewPassword() {
-		return password;
+		return newPassword;
 	}
 	public void setNewPassword(String newPassword) {
-		this.password = newPassword;
+		this.newPassword = newPassword;
 	}
     
 }

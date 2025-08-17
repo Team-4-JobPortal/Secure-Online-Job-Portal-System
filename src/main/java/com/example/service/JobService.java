@@ -14,6 +14,8 @@ public interface JobService {
     void updateJob(Job job);
 
     void deleteJob(int id);
+    
+    List<Job> getJobsByEmployer(String email);
 
     List<Job> searchJobs(String keyword, String location, Integer minSalary, Integer maxSalary);
 }

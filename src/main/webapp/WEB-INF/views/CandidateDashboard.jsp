@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ page isELIgnored="true" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,7 +90,7 @@
             color: white;
         }
 
-        .nav-tab:hover:not(.active) {
+        .nav-tab:hover:not(.active)) {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
@@ -170,6 +172,12 @@
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .btn-outline {
@@ -402,9 +410,89 @@
             font-weight: 600;
         }
 
+        .form-row .form-group {
+            flex: 1;
+        }
+
         textarea.form-control {
             resize: vertical;
             min-height: 120px;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        /* Compact cards for overview listing */
+.overview-jobs-list .job-card {
+    padding: 16px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+}
+
+.overview-jobs-list .job-header {
+    margin-bottom: 8px;
+}
+
+.overview-jobs-list .job-title {
+    font-size: 18px;
+}
+
+.overview-jobs-list .company-name {
+    font-size: 14px;
+}
+
+.overview-jobs-list .job-details {
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.overview-jobs-list .job-detail {
+    padding: 4px 10px;
+    font-size: 12px;
+}
+
+.overview-jobs-list .job-description {
+    margin-bottom: 10px;
+    color: #555;
+    font-size: 13px;
+}
+
+.overview-jobs-list .btn-small {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+        
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         @media (max-width: 768px) {
@@ -438,198 +526,732 @@
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">👤 Job Portal - Candidate</div>
-            <div class="user-info">
-                <span>Welcome, <strong id="candidateName">Jane Smith</strong></span>
-                <button class="logout-btn" onclick="logout()">Logout</button>
-            </div>
+<header class="header">
+    <div class="header-content">
+        <div class="logo">🎓 Job Portal - Candidate</div>
+        <div class="user-info">
+            <span>Welcome, <strong id="candidateName"></strong></span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
         </div>
-    </header>
+    </div>
+</header>
 
-    <div class="dashboard-container">
-        <div class="dashboard-nav">
-            <button class="nav-tab active" onclick="showTab('overview')">📊 Overview</button>
-            <button class="nav-tab" onclick="showTab('search-jobs')">🔍 Find Jobs</button>
-            <button class="nav-tab" onclick="showTab('my-applications')">📋 My Applications</button>
-            <button class="nav-tab" onclick="showTab('profile')">👤 Profile</button>
-        </div>
 
-        <!-- Overview Tab -->
-        <div id="overview" class="tab-content active">
-            <h2 class="section-title">Dashboard Overview</h2>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number" id="totalApplications">7</div>
-                    <div class="stat-label">Total Applications</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="pendingApplications">3</div>
-                    <div class="stat-label">Pending Review</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="shortlistedApplications">2</div>
-                    <div class="stat-label">Shortlisted</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="jobsViewed">15</div>
-                    <div class="stat-label">Jobs Viewed</div>
-                </div>
+<div class="dashboard-container">
+    <div class="dashboard-nav">
+        <button class="nav-tab active" onclick="showTab('overview', event)">📊 Overview</button>
+        <button class="nav-tab" onclick="showTab('search-jobs', event)">🔍 Find Jobs</button>
+        <button class="nav-tab" onclick="showTab('my-applications', event)">📋 My Applications</button>
+        <button class="nav-tab" onclick="showTab('profile', event)">👤 Profile</button>
+    </div>
+
+    <!-- Overview Tab -->
+    <div id="overview" class="tab-content active">
+        <h2 class="section-title">Dashboard Overview</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalApplications">0</div>
+                <div class="stat-label">Total Applications</div>
             </div>
-
-            <h3>Recent Job Matches</h3>
-            <div id="recommendedJobs">
-                <!-- Recommended jobs will be populated here -->
+            <div class="stat-card">
+                <div class="stat-number" id="pendingApplications">0</div>
+                <div class="stat-label">Pending Review</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="shortlistedApplications">0</div>
+                <div class="stat-label">Shortlisted</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="jobsViewed">0</div>
+                <div class="stat-label">Jobs Viewed</div>
             </div>
         </div>
 
-        <!-- Search Jobs Tab -->
-        <div id="search-jobs" class="tab-content">
-            <h2 class="section-title">Find Your Next Job</h2>
+        <h3>All Available Jobs</h3>
+<div id="overviewJobs" class="overview-jobs-list">
+    <p>Loading jobs...</p>
+</div>
+
+<h3 style="margin-top:24px;">Recent Job Matches</h3>
+<div id="recommendedJobs">
+    <p>Loading job recommendations...</p>
+</div>
+        
+    </div>
+
+    <!-- Search Jobs Tab -->
+    <div id="search-jobs" class="tab-content">
+        <h2 class="section-title">Find Your Next Job</h2>
+
+        <div class="search-filters">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="searchKeyword">Keywords</label>
+                    <input type="text" id="searchKeyword" class="form-control" placeholder="Job title, skills, company...">
+                </div>
+                <div class="filter-group">
+                    <label for="searchLocation">Location</label>
+                    <input type="text" id="searchLocation" class="form-control" placeholder="City, State, Remote...">
+                </div>
+            </div>
+
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="filterMinSalary">Min Salary</label>
+                    <input type="number" id="filterMinSalary" class="form-control" placeholder="e.g., 50000">
+                </div>
+                <div class="filter-group">
+                    <label for="filterMaxSalary">Max Salary</label>
+                    <input type="number" id="filterMaxSalary" class="form-control" placeholder="e.g., 100000">
+                </div>
+                <div class="filter-group" style="display: flex; align-items: end;">
+                    <button type="button" class="btn btn-primary" onclick="searchJobs()">Search Jobs</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="jobsResults">
+            <p>Loading available jobs...</p>
+        </div>
+    </div>
+
+    <!-- My Applications Tab -->
+    <div id="my-applications" class="tab-content">
+        <h2 class="section-title">My Job Applications</h2>
+        <div id="applicationsList">
+            <p>Loading applications...</p>
+        </div>
+    </div>
+
+    <!-- Profile Tab -->
+    <div id="profile" class="tab-content">
+        <h2 class="section-title">My Profile</h2>
+
+        <div id="profileAlertContainer"></div>
+
+        <form id="profileForm">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="profileFirstName">First Name *</label>
+                    <input type="text" id="profileFirstName" name="firstName" class="form-control" required>
+                </div>
+                <div class="filter-group">
+                    <label for="profileLastName">Last Name *</label>
+                    <input type="text" id="profileLastName" name="lastName" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="profileEmail">Email *</label>
+                    <input type="email" id="profileEmail" name="email" class="form-control" required readonly>
+                </div>
+                <div class="filter-group">
+                    <label for="profilePhone">Phone</label>
+                    <input type="tel" id="profilePhone" name="phone" class="form-control">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="profileLocation">Current Location</label>
+                <input type="text" id="profileLocation" name="location" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="profileSkills">Skills</label>
+                <textarea id="profileSkills" name="skills" class="form-control" placeholder="Enter your key skills separated by commas..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="profileExperience">Years of Experience</label>
+                <select id="profileExperience" name="experience" class="form-control">
+                    <option value="0-1">0-1 years</option>
+                    <option value="1-3">1-3 years</option>
+                    <option value="3-5">3-5 years</option>
+                    <option value="5-10">5-10 years</option>
+                    <option value="10+">10+ years</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="updateProfileBtn">
+                <span id="updateProfileText">Update Profile</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Application Modal -->
+<div id="applicationModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeApplicationModal()">&times;</span>
+        <h2>Apply for Job</h2>
+
+        <div id="applicationAlertContainer"></div>
+
+        <form id="applicationForm">
+            <input type="hidden" id="applyJobId" name="jobId">
+
+            <div class="form-group">
+                <label>Job Title</label>
+                <div id="applyJobTitle" style="font-weight: bold; color: #667eea;"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Company</label>
+                <div id="applyCompanyName" style="font-weight: bold;"></div>
+            </div>
+
+            <div class="form-group">
+    <label for="coverLetter">Cover Letter *</label>
+    <textarea id="coverLetter" name="coverLetter" class="form-control" required
+              placeholder="Write a compelling cover letter explaining why you're the perfect fit for this role..."></textarea>
+</div>
+
+
+            <button type="submit" class="btn btn-primary" id="submitApplicationBtn">
+                <span id="submitApplicationText">Submit Application</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    let authToken = null;
+    let appliedJobIds = new Set();
+
+    $(document).ready(function() {
+        authToken = getCookie('token') || localStorage.getItem('authToken');
+        if (!authToken) {
+            alert('Please login first!');
+            window.location.href = '/Secure-Online-Job-Portal-System/login';
+            return;
+        }
+        loadCandidateInfo(); 
+        loadDashboardData();
+        loadProfile();
+        loadAvailableJobs();
+        loadAllJobsForOverview();   // NEW
+
+
+        // Form submissions
+        $("#applicationForm").submit(function(e) {
+            e.preventDefault();
+            submitApplication();
+        });
+
+        $("#profileForm").submit(function(e) {
+            e.preventDefault();
+            updateProfile();
+        });
+    });
+
+    
+    function loadCandidateInfo() {
+        $.ajax({
+            url: "/Secure-Online-Job-Portal-System/auth/user/me",
+            method: "GET",
+            headers: { "Authorization": "Bearer " + authToken },
+            success: function(data) {
+                let displayName = data.firstName && data.lastName 
+                    ? data.firstName + " " + data.lastName 
+                    : data.email; 
+                $("#candidateName").text(displayName);
+            },
+            error: function() {
+                $("#candidateName").text("Candidate");
+            }
+        });
+    }
+    
+    function showTab(tabId, event) {
+        $(".tab-content").removeClass("active");
+        $(".nav-tab").removeClass("active");
+
+        $("#" + tabId).addClass("active");
+        if (event) $(event.target).addClass("active");
+
+        if (tabId === 'search-jobs') {
+            loadAvailableJobs();
+        } else if (tabId === 'my-applications') {
+            loadMyApplications();
+        } else if (tabId === 'overview') {
+            loadDashboardData();
+            loadAllJobsForOverview();   // NEW
+            loadRecommendedJobs();
+        } else if (tabId === 'profile') {
+            loadProfile();
+        }
+    }
+
+    function getCookie(name) {
+        const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+        return match ? match[2] : null;
+    }
+
+    // Dashboard data
+    function loadDashboardData() {
+        $.ajax({
+            url: "/Secure-Online-Job-Portal-System/applications/stats",
+            method: "GET",
+            headers: { "Authorization": "Bearer " + authToken },
+            success: function(data) {
+                $("#totalApplications").text(data.totalApplications || 0);
+                $("#pendingApplications").text(data.pendingApplications || 0);
+                $("#shortlistedApplications").text(data.shortlistedApplications || 0);
+                $("#jobsViewed").text(data.jobsViewed || 0);
+            },
+            error: function() {
+                console.log("Error loading dashboard stats");
+            }
+        });
+    }
+
+    // Load recommended jobs for overview
+    function loadRecommendedJobs() {
+        $.ajax({
+            url: "/Secure-Online-Job-Portal-System/jobs/recommended",
+            method: "GET",
+            headers: { "Authorization": "Bearer " + authToken },
+            success: function(jobs) {
+                displayJobs(jobs, $("#recommendedJobs"), true);
+            },
+            error: function() {
+                $("#recommendedJobs").html("<p>Unable to load job recommendations at the moment.</p>");
+            }
+        });
+    }
+
+    // Search jobs
+    function searchJobs() {
+        const keyword = $("#searchKeyword").val().trim();
+        const location = $("#searchLocation").val().trim();
+        const minSalary = $("#filterMinSalary").val();
+        const maxSalary = $("#filterMaxSalary").val();
+
+        const searchParams = {
+            keyword: keyword,
+            location: location,
+            minSalary: minSalary,
+            maxSalary: maxSalary
+        };
+
+        $("#jobsResults").html("<p>Searching for jobs...</p>");
+
+        $.ajax({
+            url: "/Secure-Online-Job-Portal-System/jobs/search",
+            method: "GET",
+            headers: { "Authorization": "Bearer " + authToken },
+            data: searchParams,
+            success: function(jobs) {
+                displayJobs(jobs, $("#jobsResults"));
+            },
+            error: function() {
+                $("#jobsResults").html("<p>Error searching for jobs. Please try again.</p>");
+            }
+        });
+    }
+
+    // Load all available jobs
+    function loadAvailableJobs() {
+        $("#jobsResults").html("<p>Loading available jobs...</p>");
+
+        $.ajax({
+            url: "/Secure-Online-Job-Portal-System/jobs/all",
+            method: "GET",
+            headers: { "Authorization": "Bearer " + authToken },
+            success: function(jobs) {
+                displayJobs(jobs, $("#jobsResults"));
+            },
+            error: function() {
+                $("#jobsResults").html("<p>Error loading jobs. Please try again.</p>");
+            }
+        });
+    }
+
+    // Display jobs function
+    function displayJobs(jobs, container, isRecommended = false) {
+        container.html("");
+
+        if (!jobs || jobs.length === 0) {
+            container.html(isRecommended ?
+                "<p>No job recommendations available.</p>" :
+                "<p>No jobs found. Try adjusting your search criteria.</p>");
+            return;
+        }
+
+        jobs.forEach(job => {
+            const isApplied = appliedJobIds.has(job.job_id);
+            const salaryRange = job.min_salary && job.max_salary
+                ? `$${job.min_salary} - $${job.max_salary}`
+                : job.min_salary ? `From $${job.min_salary}`
+                : job.max_salary ? `Up to $${job.max_salary}`
+                : 'Salary negotiable';
+
+            const deadline = job.deadline ? new Date(job.deadline).toLocaleDateString() : "No deadline";
+            const companyName = job.user && job.user.employerProfile
+            ? job.user.employerProfile.companyName
+            : job.user?.firstName || "Company";
+
+
+            // Escape strings used inside attribute single quotes to avoid breaking HTML
+            const safeTitle = escapeHtml(job.title).replace(/'/g, "&apos;");
+            const safeCompany = escapeHtml(companyName).replace(/'/g, "&apos;");
+
+            const jobCard = `
+                <div class="job-card ${isApplied ? 'applied' : ''}">
+                    <div class="job-header">
+                        <div>
+                            <div class="job-title">${escapeHtml(job.title)}</div>
+                            <div class="company-name">${escapeHtml(companyName)}</div>
+                        </div>
+                        ${isApplied ? '<span class="applied-badge">Applied</span>' : ''}
+                    </div>
+                    <div class="job-details">
+                        <div class="job-detail">📍 ${escapeHtml(job.location)}</div>
+                        <div class="job-detail">💰 ${salaryRange}</div>
+                        <div class="job-detail">⏰ Deadline: ${deadline}</div>
+                    </div>
+                    <div class="job-description">${escapeHtml(job.description)}</div>
+                    <div class="job-actions">
+                    ${isApplied
+                        ? '<button class="btn btn-disabled btn-small" disabled>Already Applied</button>'
+                        : `<button class="btn btn-success btn-small" onclick="openApplicationModal(${job.job_id}, '${safeTitle}', '${safeCompany}')">Apply</button>`
+                    }
+                </div>
+
+                </div>`;
+            container.append(jobCard);
+        });
+    }
+
+    
+ // Load all jobs for overview (compact)
+    function loadAllJobsForOverview() {
+    const container = $("#overviewJobs");
+    container.html("<p>Loading jobs...</p>");
+
+    $.ajax({
+        url: "/Secure-Online-Job-Portal-System/jobs/list",
+        method: "GET",
+        headers: { "Authorization": "Bearer " + authToken },
+        success: function(jobs) {
+            displayJobsCompact(jobs, container);
+        },
+        error: function() {
+            container.html("<p>Error loading jobs. Please try again.</p>");
+        }
+    });
+}
+
+
+    // Compact display for overview jobs
+    function displayJobsCompact(jobs, container) {
+        container.html("");
+
+        if (!jobs || jobs.length === 0) {
+            container.html("<p>No jobs available right now.</p>");
+            return;
+        }
+
+        jobs.forEach(job => {
+            const isApplied = appliedJobIds.has(job.job_id);
+            const salaryRange = job.min_salary && job.max_salary
+                ? `$${job.min_salary} - $${job.max_salary}`
+                : job.min_salary ? `From $${job.min_salary}`
+                : job.max_salary ? `Up to $${job.max_salary}`
+                : 'Salary negotiable';
+
+            const deadline = job.deadline ? new Date(job.deadline).toLocaleDateString() : "No deadline";
+            const companyName = job.user && job.user.employerProfile
+            ? job.user.employerProfile.companyName
+            : job.user?.firstName || "Company";
+
+
+            const safeTitle = escapeHtml(job.title).replace(/'/g, "&apos;");
+            const safeCompany = escapeHtml(companyName).replace(/'/g, "&apos;");
+
+            const card = `
+                <div class="job-card">
+                    <div class="job-header">
+                        <div>
+                            <div class="job-title">${escapeHtml(job.title)}</div>
+                            <div class="company-name">${escapeHtml(companyName)}</div>
+                        </div>
+                        ${isApplied ? '<span class="applied-badge">Applied</span>' : ''}
+                    </div>
+                    <div class="job-details">
+                        <div class="job-detail">📍 ${escapeHtml(job.location)}</div>
+                        <div class="job-detail">💰 ${salaryRange}</div>
+                        <div class="job-detail">⏰ ${deadline}</div>
+                    </div>
+                    <div class="job-actions">
+                    ${isApplied
+                        ? '<button class="btn btn-disabled btn-small" disabled>Already Applied</button>'
+                        : `<button class="btn btn-success btn-small" onclick="openApplicationModal(${job.job_id}, '${safeTitle}', '${safeCompany}')">Apply Now</button>`
+                    }
+                </div>
+
+                </div>
+            `;
+            container.append(card);
+        });
+    }
+
+    // Application modal functions
+    function openApplicationModal(jobId, jobTitle, companyName) {
+        $("#applyJobId").val(jobId);
+        $("#applyJobTitle").text(jobTitle);
+        $("#applyCompanyName").text(companyName);
+        $("#coverLetter").val('');
+        $("#applicationAlertContainer").html('');
+        $("#applicationModal").show();
+    }
+
+    function closeApplicationModal() {
+        $("#applicationModal").hide();
+    }
+
+ // Submit application
+    function submitApplication() {
+        const submitBtn = $("#submitApplicationBtn");
+        const submitText = $("#submitApplicationText");
+
+        submitBtn.prop("disabled", true);
+        submitText.html('<span class="loading"></span>Submitting...');
+
+        const jobId = $("#applyJobId").val();
+        const coverLetter = $("#coverLetter").val().trim();
+
+        $.ajax({
+            url: "/Secure-Online-Job-Portal-System/jobs/" + jobId + "/apply",   // ✅ jobId in the URL
+            method: "POST",
+            contentType: "application/json",
+            headers: { "Authorization": "Bearer " + authToken },
+            data: JSON.stringify({ coverLetter: coverLetter }),   // ✅ only cover letter
+            success: function() {
+                showAlert('✅ Application submitted successfully!', 'success', 'applicationAlertContainer');
+                appliedJobIds.add(parseInt(jobId, 10));
+                loadDashboardData();
+                setTimeout(() => {
+                    closeApplicationModal();
+                    // Refresh if on search-jobs tab
+                    const activeTab = $('.nav-tab.active').attr('onclick').match(/'([^']+)'/)[1];
+                    if (activeTab === 'search-jobs') {
+                        loadAvailableJobs();
+                    }
+                }, 2000);
+            },
+            error: function(xhr) {
+                showAlert('❌ ' + (xhr.responseText || 'Failed to submit application'), 'error', 'applicationAlertContainer');
+            },
+            complete: function() {
+                submitBtn.prop("disabled", false);
+                submitText.html('Submit Application');
+            }
+        });
+    }
+
+
+    // Load my applications
+    function loadMyApplications() {
+        $("#applicationsList").html("<p>Loading applications...</p>");
+
+        $.ajax({
+            url: "/Secure-Online-Job-Portal-System/applications/my-applications",
+            method: "GET",
+            headers: { "Authorization": "Bearer " + authToken },
+            success: function(applications) {
+                displayMyApplications(applications);
+            },
+            error: function() {
+                $("#applicationsList").html("<p>Error loading applications. Please try again.</p>");
+            }
+        });
+    }
+
+    // Display applications function
+    function displayMyApplications(applications) {
+        const container = $("#applicationsList");
+        container.html("");
+
+        if (!applications || applications.length === 0) {
+            container.html("<p>You haven't applied to any jobs yet. <a href='#' onclick='showTab(\"search-jobs\", null)'>Browse available jobs</a> to get started!</p>");
+            return;
+        }
+
+        applications.forEach(app => {
+            const applicationDate = new Date(app.applicationDate).toLocaleDateString();
+            const job = app.job;
+            const companyName = job.user && job.user.employerProfile 
+            ? job.user.employerProfile.companyName 
+            : job.user?.firstName || "Company";
             
-            <div class="search-filters">
-                <div class="filter-row">
-                    <div class="filter-group">
-                        <label for="searchKeyword">Keywords</label>
-                        <input type="text" id="searchKeyword" class="form-control" placeholder="Job title, skills, company...">
+            const appCard = `
+                <div class="application-card">
+                    <div class="job-header">
+                        <div>
+                            <div class="job-title">${escapeHtml(job.title)}</div>
+                            <div class="company-name">${escapeHtml(companyName)}</div>
+                        </div>
+                        <span class="application-status status-${app.status.toLowerCase()}">${escapeHtml(app.status)}</span>
                     </div>
-                    <div class="filter-group">
-                        <label for="searchLocation">Location</label>
-                        <input type="text" id="searchLocation" class="form-control" placeholder="City, State, Remote...">
+                    <div class="job-details">
+                        <div class="job-detail">📍 ${escapeHtml(job.location)}</div>
+                        <div class="job-detail">📅 Applied: ${applicationDate}</div>
                     </div>
-                </div>
-                
-                <div class="filter-row">
-                    <div class="filter-group">
-                        <label for="filterJobType">Job Type</label>
-                        <select id="filterJobType" class="form-control">
-                            <option value="">All Types</option>
-                            <option value="full-time">Full Time</option>
-                            <option value="part-time">Part Time</option>
-                            <option value="contract">Contract</option>
-                            <option value="internship">Internship</option>
-                        </select>
+                    <div class="job-description">
+                        ${escapeHtml((app.coverLetter || '').substring(0, 200))}${(app.coverLetter && app.coverLetter.length > 200) ? '...' : ''}
                     </div>
-                    <div class="filter-group">
-                        <label for="filterExperience">Experience Level</label>
-                        <select id="filterExperience" class="form-control">
-                            <option value="">All Levels</option>
-                            <option value="entry">Entry Level</option>
-                            <option value="mid">Mid Level</option>
-                            <option value="senior">Senior Level</option>
-                        </select>
+                    <div class="job-actions">
+                        <button class="btn btn-info btn-small" onclick="viewApplicationDetails(${app.applicationId})">View Details</button>
+                        ${app.status === 'PENDING' ? `<button class="btn btn-outline btn-small" onclick="withdrawApplication(${app.applicationId})">Withdraw</button>` : ''}
                     </div>
-                    <div class="filter-group">
-                        <label for="filterSalary">Min Salary</label>
-                        <input type="number" id="filterSalary" class="form-control" placeholder="e.g., 50000">
-                    </div>
-                    <div class="filter-group" style="display: flex; align-items: end;">
-                        <button type="button" class="btn btn-primary" onclick="searchJobs()">Search Jobs</button>
-                    </div>
-                </div>
-            </div>
+                </div>`;
+            container.append(appCard);
+        });
 
-            <div id="jobsResults">
-                <!-- Job search results will be populated here -->
-            </div>
-        </div>
+        // Update applied job IDs
+        appliedJobIds.clear();
+        applications.forEach(app => {
+            if (app && app.job && typeof app.job.job_id !== 'undefined') {
+                appliedJobIds.add(app.job.job_id);
+            }
+        });
+    }
 
-        <!-- My Applications Tab -->
-        <div id="my-applications" class="tab-content">
-            <h2 class="section-title">My Job Applications</h2>
-            <div id="applicationsList">
-                <!-- Applications will be populated here -->
-            </div>
-        </div>
-
-        <!-- Profile Tab -->
-        <div id="profile" class="tab-content">
-            <h2 class="section-title">My Profile</h2>
-            <form id="profileForm">
-                <div class="filter-row">
-                    <div class="filter-group">
-                        <label for="profileFirstName">First Name</label>
-                        <input type="text" id="profileFirstName" name="firstName" class="form-control" value="Jane">
-                    </div>
-                    <div class="filter-group">
-                        <label for="profileLastName">Last Name</label>
-                        <input type="text" id="profileLastName" name="lastName" class="form-control" value="Smith">
-                    </div>
-                </div>
-                
-                <div class="filter-row">
-                    <div class="filter-group">
-                        <label for="profileEmail">Email</label>
-                        <input type="email" id="profileEmail" name="email" class="form-control" value="jane.smith@email.com">
-                    </div>
-                    <div class="filter-group">
-                        <label for="profilePhone">Phone</label>
-                        <input type="tel" id="profilePhone" name="phone" class="form-control" value="555-0123">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="profileLocation">Current Location</label>
-                    <input type="text" id="profileLocation" name="location" class="form-control" value="San Francisco, CA">
-                </div>
-
-                <div class="form-group">
-                    <label for="profileSkills">Skills</label>
-                    <textarea id="profileSkills" name="skills" class="form-control">JavaScript, React, Node.js, Python, AWS, MongoDB</textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="profileExperience">Years of Experience</label>
-                    <select id="profileExperience" name="experience" class="form-control">
-                        <option value="0-1">0-1 years</option>
-                        <option value="1-3">1-3 years</option>
-                        <option value="3-5" selected>3-5 years</option>
-                        <option value="5-10">5-10 years</option>
-                        <option value="10+">10+ years</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Update Profile</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Application Modal -->
-    <div id="applicationModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeApplicationModal()">&times;</span>
-            <h2>Apply for Job</h2>
-            <form id="applicationForm">
-                <input type="hidden" id="applyJobId" name="jobId">
-                
-                <div class="form-group">
-                    <label>Job Title</label>
-                    <div id="applyJobTitle" style="font-weight: bold; color: #667eea;"></div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Company</label>
-                    <div id="applyCompanyName" style="font-weight: bold;"></div>
-                </div>
-
-                <div class="form-group">
-                    <label for="coverLetter">Cover Letter *</label>
-                    <textarea id="coverLetter" name="coverLetter" class="form-control" required 
-                              placeholder="Write a compelling cover letter explaining why you're the perfect fit for this role..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="additionalNotes">Additional Notes</label>
-                    <textarea id="additionalNotes" name="additionalNotes" class="form-control" 
-                              placeholder="Any additional information you'd like to share..."></textarea>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Submit Application</button>
-            </form>
-        </div>
-    </div>
-
-  </body>
-  </html>
   
+    // View application details
+    function viewApplicationDetails(applicationId) {
+        $.ajax({
+            url: `/Secure-Online-Job-Portal-System/applications/${applicationId}`,
+            method: "GET",
+            headers: { "Authorization": "Bearer " + authToken },
+            success: function(application) {
+                // Replace alert with a modal if desired
+                alert(`Application Status: ${application.status}\nCover Letter: ${application.coverLetter || ''}`);
+            },
+            error: function() {
+                alert("Error loading application details");
+            }
+        });
+        }
+
+    // Withdraw application
+    function withdrawApplication(applicationId) {
+        if (!confirm("Are you sure you want to withdraw this application?")) return;
+
+        $.ajax({
+            url: `/Secure-Online-Job-Portal-System/applications/${applicationId}/withdraw`,
+            method: "DELETE",
+            headers: { "Authorization": "Bearer " + authToken },
+            success: function() {
+                alert("Application withdrawn successfully");
+                loadMyApplications();
+                loadDashboardData();
+            },
+            error: function() {
+                alert("Error withdrawing application");
+            }
+        });
+    }
+
+    // Load profile
+    function loadProfile() {
+        $.ajax({
+            url: "/Secure-Online-Job-Portal-System/profile",
+            method: "GET",
+            headers: { "Authorization": "Bearer " + authToken },
+            success: function(profile) {
+                $("#candidateName").text((profile.firstName || '') + " " + (profile.lastName || ''));
+                $("#profileFirstName").val(profile.firstName || '');
+                $("#profileLastName").val(profile.lastName || '');
+                $("#profileEmail").val(profile.email || '');
+                $("#profilePhone").val(profile.phone || '');
+                $("#profileLocation").val(profile.location || '');
+                $("#profileSkills").val(profile.skills || '');
+                $("#profileExperience").val(profile.experience || '0-1');
+            },
+            error: function() {
+                console.log("Error loading profile");
+            }
+        });
+    }
+
+    // Update profile
+    function updateProfile() {
+        const updateBtn = $("#updateProfileBtn");
+        const updateText = $("#updateProfileText");
+
+        updateBtn.prop("disabled", true);
+        updateText.html('<span class="loading"></span>Updating...');
+
+        const profileData = {
+            firstName: $("#profileFirstName").val().trim(),
+            lastName: $("#profileLastName").val().trim(),
+            phone: $("#profilePhone").val().trim(),
+            location: $("#profileLocation").val().trim(),
+            skills: $("#profileSkills").val().trim(),
+            experience: $("#profileExperience").val()
+        };
+
+        $.ajax({
+            url: "/Secure-Online-Job-Portal-System/users/update",
+            method: "PUT",
+            contentType: "application/json",
+            headers: { "Authorization": "Bearer " + authToken },
+            data: JSON.stringify(profileData),
+            success: function() {
+                showAlert('✅ Profile updated successfully!', 'success', 'profileAlertContainer');
+                $("#candidateName").text(profileData.firstName + " " + profileData.lastName);
+            },
+            error: function(xhr) {
+                showAlert('❌ ' + (xhr.responseText || 'Failed to update profile'), 'error', 'profileAlertContainer');
+            },
+            complete: function() {
+                updateBtn.prop("disabled", false);
+                updateText.html('Update Profile');
+            }
+        });
+    }
+
+    // Utility functions
+    function showAlert(message, type, containerId) {
+        const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+        const alertHtml = `<div class="alert ${alertClass}">${message}</div>`;
+        $(`#${containerId}`).html(alertHtml);
+
+        setTimeout(() => {
+            $(`#${containerId}`).html('');
+        }, 5000);
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Logout function
+    function logout() {
+        if (confirm('Are you sure you want to logout?')) {
+            // Clear tokens
+            document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            localStorage.removeItem('authToken');
+
+            // Redirect to login
+            window.location.href = '/Secure-Online-Job-Portal-System/login';
+        }
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('applicationModal');
+        if (event.target === modal) {
+            closeApplicationModal();
+        }
+    }
+</script>
+</body>
+</html>
