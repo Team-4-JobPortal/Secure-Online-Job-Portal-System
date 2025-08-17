@@ -727,11 +727,17 @@
             window.location.href = '/Secure-Online-Job-Portal-System/login';
             return;
         }
-        loadCandidateInfo(); 
+        
+      
+        loadCandidateInfo();
+       
         loadDashboardData();
         loadProfile();
         loadAvailableJobs();
-        loadAllJobsForOverview();   // NEW
+        
+        loadAllJobsForOverview();  
+        
+        loadAppliedJobs();
 
 
         // Form submissions
@@ -760,6 +766,31 @@
             },
             error: function() {
                 $("#candidateName").text("Candidate");
+            }
+        });
+    }
+    
+    function loadAppliedJobs() {
+        $.ajax({
+            url: "/Secure-Online-Job-Portal-System/applications/my-applications",
+            method: "GET",
+            headers: { "Authorization": "Bearer " + authToken },
+            success: function(applications) {
+                console.log("Loaded applied jobs:", applications); // DEBUG
+                
+                // Clear and populate applied job IDs
+                appliedJobIds.clear();
+                applications.forEach(app => {
+                    if (app && app.job && typeof app.job.job_id !== 'undefined') {
+                        console.log("Adding applied job ID:", app.job.job_id); // DEBUG
+                        appliedJobIds.add(app.job.job_id);
+                    }
+                });
+                
+                console.log("Applied job IDs set:", Array.from(appliedJobIds)); // DEBUG
+            },
+            error: function(xhr) {
+                console.error("Error loading applied jobs:", xhr);
             }
         });
     }
@@ -870,60 +901,65 @@
     }
 
     // Display jobs function
-    function displayJobs(jobs, container, isRecommended = false) {
-        container.html("");
+   function displayJobs(jobs, container, isRecommended = false) {
+    container.html("");
 
-        if (!jobs || jobs.length === 0) {
-            container.html(isRecommended ?
-                "<p>No job recommendations available.</p>" :
-                "<p>No jobs found. Try adjusting your search criteria.</p>");
-            return;
-        }
-
-        jobs.forEach(job => {
-            const isApplied = appliedJobIds.has(job.job_id);
-            const salaryRange = job.min_salary && job.max_salary
-                ? `$${job.min_salary} - $${job.max_salary}`
-                : job.min_salary ? `From $${job.min_salary}`
-                : job.max_salary ? `Up to $${job.max_salary}`
-                : 'Salary negotiable';
-
-            const deadline = job.deadline ? new Date(job.deadline).toLocaleDateString() : "No deadline";
-            const companyName = job.user && job.user.employerProfile
-            ? job.user.employerProfile.companyName
-            : job.user?.firstName || "Company";
-
-
-            // Escape strings used inside attribute single quotes to avoid breaking HTML
-            const safeTitle = escapeHtml(job.title).replace(/'/g, "&apos;");
-            const safeCompany = escapeHtml(companyName).replace(/'/g, "&apos;");
-
-            const jobCard = `
-                <div class="job-card ${isApplied ? 'applied' : ''}">
-                    <div class="job-header">
-                        <div>
-                            <div class="job-title">${escapeHtml(job.title)}</div>
-                            <div class="company-name">${escapeHtml(companyName)}</div>
-                        </div>
-                        ${isApplied ? '<span class="applied-badge">Applied</span>' : ''}
-                    </div>
-                    <div class="job-details">
-                        <div class="job-detail">📍 ${escapeHtml(job.location)}</div>
-                        <div class="job-detail">💰 ${salaryRange}</div>
-                        <div class="job-detail">⏰ Deadline: ${deadline}</div>
-                    </div>
-                    <div class="job-description">${escapeHtml(job.description)}</div>
-                    <div class="job-actions">
-                    ${isApplied
-                        ? '<button class="btn btn-disabled btn-small" disabled>Already Applied</button>'
-                        : `<button class="btn btn-success btn-small" onclick="openApplicationModal(${job.job_id}, '${safeTitle}', '${safeCompany}')">Apply</button>`
-                    }
-                </div>
-
-                </div>`;
-            container.append(jobCard);
-        });
+    if (!jobs || jobs.length === 0) {
+        container.html(isRecommended ?
+            "<p>No job recommendations available.</p>" :
+            "<p>No jobs found. Try adjusting your search criteria.</p>");
+        return;
     }
+
+    jobs.forEach(job => {
+        // DEBUG: Log the job object to console to verify structure
+        console.log("Job object:", job);
+        console.log("Job ID:", job.job_id);
+        
+        const jobId = job.job_id; // Make sure this field exists
+        const isApplied = appliedJobIds.has(jobId);
+        
+        const salaryRange = job.min_salary && job.max_salary
+            ? `$${job.min_salary} - $${job.max_salary}`
+            : job.min_salary ? `From $${job.min_salary}`
+            : job.max_salary ? `Up to $${job.max_salary}`
+            : 'Salary negotiable';
+
+        const deadline = job.deadline ? new Date(job.deadline).toLocaleDateString() : "No deadline";
+        const companyName = job.user && job.user.employerProfile
+        ? job.user.employerProfile.companyName
+        : job.user?.firstName || "Company";
+
+        // Escape strings used inside attribute single quotes to avoid breaking HTML
+        const safeTitle = escapeHtml(job.title).replace(/'/g, "&apos;");
+        const safeCompany = escapeHtml(companyName).replace(/'/g, "&apos;");
+
+        const jobCard = `
+            <div class="job-card ${isApplied ? 'applied' : ''}">
+                <div class="job-header">
+                    <div>
+                        <div class="job-title">${escapeHtml(job.title)}</div>
+                        <div class="company-name">${escapeHtml(companyName)}</div>
+                    </div>
+                    ${isApplied ? '<span class="applied-badge">Applied</span>' : ''}
+                </div>
+                <div class="job-details">
+                    <div class="job-detail">📍 ${escapeHtml(job.location)}</div>
+                    <div class="job-detail">💰 ${salaryRange}</div>
+                    <div class="job-detail">⏰ Deadline: ${deadline}</div>
+                    <div class="job-detail">🆔 Job ID: ${jobId}</div> <!-- DEBUG: Show job ID -->
+                </div>
+                <div class="job-description">${escapeHtml(job.description)}</div>
+                <div class="job-actions">
+                ${isApplied
+                    ? '<button class="btn btn-disabled btn-small" disabled>Already Applied</button>'
+                    : `<button class="btn btn-success btn-small" onclick="openApplicationModal(${jobId}, '${safeTitle}', '${safeCompany}')">Apply</button>`
+                }
+            </div>
+            </div>`;
+        container.append(jobCard);
+    });
+}
 
     
  // Load all jobs for overview (compact)
@@ -998,8 +1034,17 @@
         });
     }
 
-    // Application modal functions
+ // 2. Enhanced openApplicationModal with better debugging
     function openApplicationModal(jobId, jobTitle, companyName) {
+    	console.log("Opening application modal with Job ID:", jobId); // DEBUG
+        console.log("Applied job IDs:", Array.from(appliedJobIds)); // DEBUG
+        
+        // Check if already applied
+        if (appliedJobIds.has(jobId)) {
+            alert("You have already applied to this job!");
+            return;
+        }
+        
         $("#applyJobId").val(jobId);
         $("#applyJobTitle").text(jobTitle);
         $("#applyCompanyName").text(companyName);
@@ -1007,12 +1052,12 @@
         $("#applicationAlertContainer").html('');
         $("#applicationModal").show();
     }
-
+ 
     function closeApplicationModal() {
         $("#applicationModal").hide();
     }
 
- // Submit application
+    // 3. Enhanced submitApplication with better debugging
     function submitApplication() {
         const submitBtn = $("#submitApplicationBtn");
         const submitText = $("#submitApplicationText");
@@ -1023,26 +1068,49 @@
         const jobId = $("#applyJobId").val();
         const coverLetter = $("#coverLetter").val().trim();
 
+        // DEBUG: Log the values being submitted
+        console.log("Submitting application:");
+        console.log("Job ID:", jobId);
+        console.log("Cover Letter:", coverLetter);
+        console.log("URL:", "/Secure-Online-Job-Portal-System/jobs/" + jobId + "/apply");
+
+        if (!jobId || !coverLetter) {
+            showAlert('❌ Please fill in all required fields', 'error', 'applicationAlertContainer');
+            submitBtn.prop("disabled", false);
+            submitText.html('Submit Application');
+            return;
+        }
+
         $.ajax({
-            url: "/Secure-Online-Job-Portal-System/jobs/" + jobId + "/apply",   // ✅ jobId in the URL
+            url: "/Secure-Online-Job-Portal-System/jobs/" + jobId + "/apply",
             method: "POST",
             contentType: "application/json",
             headers: { "Authorization": "Bearer " + authToken },
-            data: JSON.stringify({ coverLetter: coverLetter }),   // ✅ only cover letter
-            success: function() {
+            data: JSON.stringify({ coverLetter: coverLetter }),
+            success: function(response) {
+                console.log("Application submitted successfully:", response); // DEBUG
                 showAlert('✅ Application submitted successfully!', 'success', 'applicationAlertContainer');
+             // Add to applied jobs set
                 appliedJobIds.add(parseInt(jobId, 10));
+                
+                // Refresh data
                 loadDashboardData();
+                
                 setTimeout(() => {
                     closeApplicationModal();
-                    // Refresh if on search-jobs tab
-                    const activeTab = $('.nav-tab.active').attr('onclick').match(/'([^']+)'/)[1];
-                    if (activeTab === 'search-jobs') {
+                    // Refresh current view
+                    const activeTab = $('.nav-tab.active').attr('onclick');
+                    if (activeTab && activeTab.includes('search-jobs')) {
                         loadAvailableJobs();
+                    }
+                    if (activeTab && activeTab.includes('overview')) {
+                        loadAllJobsForOverview();
                     }
                 }, 2000);
             },
             error: function(xhr) {
+                console.error("Application submission failed:", xhr); // DEBUG
+                console.error("Response text:", xhr.responseText); // DEBUG
                 showAlert('❌ ' + (xhr.responseText || 'Failed to submit application'), 'error', 'applicationAlertContainer');
             },
             complete: function() {
@@ -1052,23 +1120,25 @@
         });
     }
 
+    // 4. // Enhanced loadMyApplications function
+function loadMyApplications() {
+    $("#applicationsList").html("<p>Loading applications...</p>");
 
-    // Load my applications
-    function loadMyApplications() {
-        $("#applicationsList").html("<p>Loading applications...</p>");
+    $.ajax({
+        url: "/Secure-Online-Job-Portal-System/applications/my-applications",
+        method: "GET",
+        headers: { "Authorization": "Bearer " + authToken },
+        success: function(applications) {
+            console.log("Loaded applications:", applications); // DEBUG
+            displayMyApplications(applications);
+        },
+        error: function(xhr) {
+            console.error("Error loading applications:", xhr); // DEBUG
+            $("#applicationsList").html("<p>Error loading applications. Please try again.</p>");
+        }
+    });
+}
 
-        $.ajax({
-            url: "/Secure-Online-Job-Portal-System/applications/my-applications",
-            method: "GET",
-            headers: { "Authorization": "Bearer " + authToken },
-            success: function(applications) {
-                displayMyApplications(applications);
-            },
-            error: function() {
-                $("#applicationsList").html("<p>Error loading applications. Please try again.</p>");
-            }
-        });
-    }
 
     // Display applications function
     function displayMyApplications(applications) {
@@ -1099,6 +1169,7 @@
                     <div class="job-details">
                         <div class="job-detail">📍 ${escapeHtml(job.location)}</div>
                         <div class="job-detail">📅 Applied: ${applicationDate}</div>
+                        <div class="job-detail">🆔 App ID: ${app.application_id}</div>
                     </div>
                     <div class="job-description">
                         ${escapeHtml((app.coverLetter || '').substring(0, 200))}${(app.coverLetter && app.coverLetter.length > 200) ? '...' : ''}

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,4 +55,23 @@ public class ApplicationDAOImpl implements ApplicationDAO{
 		}
 		
 	}
+	
+	 @Override
+	    public List<Application> findByUserId(int userId) {
+	        String hql = "FROM Application a WHERE a.user.user_id = :userId ORDER BY a.application_id DESC";
+	        Query<Application> query = getSession().createQuery(hql, Application.class);
+	        query.setParameter("userId", userId);
+	        return query.getResultList();
+	    }
+
+	    // NEW: Check if user has already applied to a specific job
+	    @Override
+	    public boolean existsByUserIdAndJobId(int userId, int jobId) {
+	        String hql = "SELECT COUNT(a) FROM Application a WHERE a.user.user_id = :userId AND a.job.job_id = :jobId";
+	        Query<Long> query = getSession().createQuery(hql, Long.class);
+	        query.setParameter("userId", userId);
+	        query.setParameter("jobId", jobId);
+	        Long count = query.uniqueResult();
+	        return count != null && count > 0;
+	    }
 }

@@ -11,5 +11,7 @@ public interface ApplicationService {
     void updateApp(Application application);
     void deleteApp(int id);
     
-    
+    // NEW METHODS
+    List<Application> findApplicationsByUser(int userId);
+    boolean hasUserAppliedToJob(int userId, int jobId);
 }

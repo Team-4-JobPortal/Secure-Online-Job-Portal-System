@@ -699,17 +699,22 @@ function loadApplications() {
                 return;
             }
             applications.forEach(app => {
+                // Extract the correct values from the nested objects
+                const applicantName = `${app.user.firstName} ${app.user.lastName}`;
+                const jobTitle = app.job.title;
+                const applicationId = app.application_id;
+                const applicationDate = app.job.createdAt || 'N/A';
+                
                 const appCard = `
                     <div class="application-card">
-                        <div class="applicant-name">${escapeHtml(app.applicantName)}</div>
-                        <p><strong>Job:</strong> ${escapeHtml(app.jobTitle)}</p>
-                        <p><strong>Applied:</strong> ${formatApplicationDate(app.applicationDate)}</p>
+                        <div class="applicant-name">${escapeHtml(applicantName)}</div>
+                        <p><strong>Job:</strong> ${escapeHtml(jobTitle)}</p>
+                        <p><strong>Applied:</strong> ${formatApplicationDate(applicationDate)}</p>
                         <p><strong>Status:</strong> <span class="application-status status-${app.status.toLowerCase()}">${app.status}</span></p>
                         <div class="job-actions">
-                            <button class="btn btn-info btn-small" onclick="viewApplication(${app.applicationId})">View Details</button>
                             ${app.status.toLowerCase() === 'pending' ? `
-                                <button class="btn btn-success btn-small" onclick="updateApplicationStatus(${app.applicationId}, 'accepted')">Accept</button>
-                                <button class="btn btn-danger btn-small" onclick="updateApplicationStatus(${app.applicationId}, 'rejected')">Reject</button>
+                                <button class="btn btn-success btn-small" onclick="updateApplicationStatus(${applicationId}, 'accepted')">Accept</button>
+                                <button class="btn btn-danger btn-small" onclick="updateApplicationStatus(${applicationId}, 'rejected')">Reject</button>
                             ` : ''}
                         </div>
                     </div>`;
@@ -721,6 +726,7 @@ function loadApplications() {
         }
     });
 }
+
 
 function escapeHtml(text) {
     const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };

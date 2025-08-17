@@ -64,40 +64,6 @@
             text-decoration: none;
         }
 
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            align-items: center;
-            gap: 30px;
-        }
-
-        .nav-menu a {
-            text-decoration: none;
-            color: var(--text-color);
-            font-weight: 500;
-            transition: color 0.3s ease;
-            position: relative;
-        }
-
-        .nav-menu a:hover {
-            color: var(--primary-color);
-        }
-
-        .nav-menu a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--primary-color);
-            transition: width 0.3s ease;
-        }
-
-        .nav-menu a:hover::after {
-            width: 100%;
-        }
-
         .auth-buttons {
             display: flex;
             gap: 15px;
@@ -227,74 +193,6 @@
             width: 100%;
             max-width: 500px;
             height: auto;
-        }
-
-        /* Search Section */
-        .search-section {
-            background: white;
-            padding: 40px 0;
-            margin-top: -40px;
-            position: relative;
-            z-index: 3;
-        }
-
-        .search-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .search-form {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: var(--shadow-hover);
-            display: grid;
-            grid-template-columns: 1fr 1fr auto;
-            gap: 15px;
-            align-items: end;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group label {
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-color);
-        }
-
-        .form-group input, .form-group select {
-            padding: 15px;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .search-btn {
-            padding: 15px 30px;
-            background: var(--gradient);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            height: fit-content;
-        }
-
-        .search-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
         }
 
         /* Features Section */
@@ -543,10 +441,6 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
-            .nav-menu {
-                display: none;
-            }
-
             .mobile-menu-btn {
                 display: block;
             }
@@ -568,11 +462,6 @@
 
             .hero-text h1 {
                 font-size: 2.5rem;
-            }
-
-            .search-form {
-                grid-template-columns: 1fr;
-                gap: 20px;
             }
 
             .section-header h2 {
@@ -632,14 +521,6 @@
             <a href="#" class="logo">
                 <i class="fas fa-briefcase"></i> JobHub
             </a>
-            
-            <ul class="nav-menu">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#jobs">Find Jobs</a></li>
-                <li><a href="#companies">Companies</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
 
             <div class="auth-buttons">
                 <!-- Login/Register Buttons (shown when not logged in) -->
@@ -675,9 +556,7 @@
                 </div>
             </div>
 
-            <button class="mobile-menu-btn">
-                <i class="fas fa-bars"></i>
-            </button>
+           
         </div>
     </nav>
 
@@ -713,32 +592,6 @@
                     </svg>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- Search Section -->
-    <section class="search-section">
-        <div class="search-container">
-            <form class="search-form">
-                <div class="form-group">
-                    <label for="job-title">Job Title</label>
-                    <input type="text" id="job-title" placeholder="e.g. Software Developer">
-                </div>
-                <div class="form-group">
-                    <label for="location">Location</label>
-                    <select id="location">
-                        <option value="">All Locations</option>
-                        <option value="mumbai">Mumbai</option>
-                        <option value="delhi">Delhi</option>
-                        <option value="bangalore">Bangalore</option>
-                        <option value="pune">Pune</option>
-                        <option value="hyderabad">Hyderabad</option>
-                    </select>
-                </div>
-                <button type="submit" class="search-btn">
-                    <i class="fas fa-search"></i> Search
-                </button>
-            </form>
         </div>
     </section>
 

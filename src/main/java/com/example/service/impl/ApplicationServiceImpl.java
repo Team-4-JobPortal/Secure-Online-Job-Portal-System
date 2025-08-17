@@ -44,6 +44,15 @@ public void deleteApp(int id) {
 	applicationDAO.delete(id);
 }
 
+@Override
+public List<Application> findApplicationsByUser(int userId) {
+    return applicationDAO.findByUserId(userId);
+}
 
+// NEW: Check if user has already applied to a job
+@Override
+public boolean hasUserAppliedToJob(int userId, int jobId) {
+    return applicationDAO.existsByUserIdAndJobId(userId, jobId);
+}
  
 }

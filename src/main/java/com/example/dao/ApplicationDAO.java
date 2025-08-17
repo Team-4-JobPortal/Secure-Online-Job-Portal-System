@@ -10,4 +10,8 @@ public interface ApplicationDAO {
     void save(Application application);
     void update(Application application);
     void delete(int id);
+    
+ // NEW METHODS
+    List<Application> findByUserId(int userId);
+    boolean existsByUserIdAndJobId(int userId, int jobId);
 }
