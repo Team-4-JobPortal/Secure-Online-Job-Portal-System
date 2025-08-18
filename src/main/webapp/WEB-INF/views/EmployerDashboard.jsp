@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page isELIgnored="true" %>
+<%@ page errorPage="error.jsp" %>
 
 
 <!DOCTYPE html>
@@ -571,7 +572,7 @@ function postJob() {
         min_salary: minSalary,
         max_salary: maxSalary,
         description: $("#jobDescription").val().trim(),
-        
+        createdAt : new Date().toISOString().split('T')[0],
         deadline: formatDeadline($("#applicationDeadline").val())
         
     };

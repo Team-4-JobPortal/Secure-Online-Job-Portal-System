@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/jobs")
 public class JobController {
@@ -85,9 +86,10 @@ public class JobController {
     public List<Job> searchJobs(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String location,
-            @RequestParam(required = false) Integer minSalary,
-            @RequestParam(required = false) Integer maxSalary) {
-        return jobService.searchJobs(keyword, location, minSalary, maxSalary);
+            @RequestParam(required = false) String minSalary,
+            @RequestParam(required = false) String maxSalary) {
+  				 
+        return jobService.searchJobs(keyword, location, Integer.parseInt(minSalary), Integer.parseInt(maxSalary));
     }
 
     // Common: Get Job by ID

@@ -877,8 +877,12 @@
             success: function(jobs) {
                 displayJobs(jobs, $("#jobsResults"));
             },
-            error: function() {
+            error: function(error) {
+            		console.log(error);
                 $("#jobsResults").html("<p>Error searching for jobs. Please try again.</p>");
+            		
+            		//$("#jobsResults")
+            		
             }
         });
     }
@@ -909,6 +913,15 @@
             "<p>No job recommendations available.</p>" :
             "<p>No jobs found. Try adjusting your search criteria.</p>");
         return;
+    }
+    
+    function formatDeadline(dateString) {
+    	if (!dateString) return null;
+    	
+    	const date = new Date(dateString);  
+    	date.setHours(23, 59, 59, 999);    // Set the time to 23:59:59.999
+    	//console.log(date.toISOString);
+    	return date.toISOString();
     }
 
     jobs.forEach(job => {
@@ -993,9 +1006,9 @@
         jobs.forEach(job => {
             const isApplied = appliedJobIds.has(job.job_id);
             const salaryRange = job.min_salary && job.max_salary
-                ? `$${job.min_salary} - $${job.max_salary}`
-                : job.min_salary ? `From $${job.min_salary}`
-                : job.max_salary ? `Up to $${job.max_salary}`
+                ? `₹${job.min_salary} - ₹${job.max_salary}`
+                : job.min_salary ? `From ₹${job.min_salary}`
+                : job.max_salary ? `Up to ₹${job.max_salary}`
                 : 'Salary negotiable';
 
             const deadline = job.deadline ? new Date(job.deadline).toLocaleDateString() : "No deadline";
@@ -1151,8 +1164,9 @@ function loadMyApplications() {
         }
 
         applications.forEach(app => {
-            const applicationDate = new Date(app.applicationDate).toLocaleDateString();
-            const job = app.job;
+            //const applicationDate = new Date(app.applicationDate).toLocaleDateString(); // looking for the date form the table
+            const applicationDate = new Date().toISOString().split('T')[0];
+            const job = app.job;														//  app.applicationDate 
             const companyName = job.user && job.user.employerProfile 
             ? job.user.employerProfile.companyName 
             : job.user?.firstName || "Company";
@@ -1168,7 +1182,7 @@ function loadMyApplications() {
                     </div>
                     <div class="job-details">
                         <div class="job-detail">📍 ${escapeHtml(job.location)}</div>
-                        <div class="job-detail">📅 Applied: ${applicationDate}</div>
+                        <div class="job-detail">📅 Applied: ${applicationDate}</div> 
                         <div class="job-detail">🆔 App ID: ${app.application_id}</div>
                     </div>
                     <div class="job-description">

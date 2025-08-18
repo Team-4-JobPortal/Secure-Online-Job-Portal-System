@@ -2,6 +2,7 @@ package com.example.service.impl;
 
 import com.example.dao.JobDao;
 import com.example.entity.Job;
+import com.example.exception.JobNotFoundException;
 import com.example.service.JobService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,13 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public List<Job> searchJobs(String keyword, String location, Integer minSalary, Integer maxSalary) {
-        return jobDao.searchJobs(keyword, location, minSalary, maxSalary);
+        	List<Job> jobs = jobDao.searchJobs(keyword, location, minSalary, maxSalary);
+        		
+        	if(jobs.isEmpty() || jobs == null) {
+        		throw new JobNotFoundException("No jobs found matching your criteria.");
+        	}
+        	
+    		return jobs;
     }
     
     @Override
