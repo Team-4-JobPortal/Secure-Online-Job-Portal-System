@@ -121,6 +121,11 @@ public class AuthController {
     }
 
 
+    @PostMapping("/register")
+    public void addUser(@RequestBody User user) {
+        
+        userService.saveUser(user);
+    }
     
 }
  

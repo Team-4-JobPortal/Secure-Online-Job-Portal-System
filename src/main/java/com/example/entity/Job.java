@@ -1,7 +1,9 @@
 package com.example.entity;
 
+import java.sql.Date;
+
 import javax.persistence.*;
-import java.time.OffsetDateTime;
+
 
 @Entity
 @Table(name = "Jobs")
@@ -25,10 +27,10 @@ public class Job {
     private int max_salary;
 
     @Column(name = "posting_date")
-    private OffsetDateTime createdAt;
+    private Date createdAt;
 
     @Column(name = "application_deadline")
-    private OffsetDateTime deadline;
+    private Date deadline;
 
     @ManyToOne
     @JoinColumn(name = "employer_id")
@@ -83,23 +85,23 @@ public class Job {
         this.max_salary = max_salary;
     }
 
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
-    }
+    public Date getCreatedAt() {
+		return createdAt;
+	}
 
-    public void setCreatedAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
 
-    public OffsetDateTime getDeadline() {
-        return deadline;
-    }
+	public Date getDeadline() {
+		return deadline;
+	}
 
-    public void setDeadline(OffsetDateTime deadline) {
-        this.deadline = deadline;
-    }
+	public void setDeadline(Date deadline) {
+		this.deadline = deadline;
+	}
 
-    public User getUser() {
+	public User getUser() {
         return user;
     }
 
