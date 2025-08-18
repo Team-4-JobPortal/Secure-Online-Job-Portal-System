@@ -264,28 +264,32 @@
             margin-bottom: 10px;
         }
 
-        .application-status {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status-accepted {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-rejected {
-            background: #f8d7da;
-            color: #721c24;
-        }
+		    .application-status {
+		    padding: 4px 8px;
+		    border-radius: 4px;
+		    font-weight: bold;
+		    text-transform: uppercase;
+		    font-size: 12px;
+		}
+		
+		.status-pending {
+		    background-color: #fff3cd;
+		    color: #856404;
+		    border: 1px solid #ffeaa7;
+		}
+		
+		.status-accepted {
+		    background-color: #d4edda;
+		    color: #155724;
+		    border: 1px solid #c3e6cb;
+		}
+		
+		.status-rejected {
+		    background-color: #f8d7da;
+		    color: #721c24;
+		    border: 1px solid #f5c6cb;
+		}
+     	
 
         .stats-grid {
             display: grid;
@@ -698,7 +702,7 @@ function loadApplications() {
     applicationsList.html("<p>Loading applications...</p>");
 
     $.ajax({
-        url: "/Secure-Online-Job-Portal-System/applications/list",
+        url: "/Secure-Online-Job-Portal-System/applications/my-job-applications",
         method: "GET",
         headers: { "Authorization": "Bearer " + authToken },
         success: function(applications) {
@@ -721,10 +725,10 @@ function loadApplications() {
                         <p><strong>Applied:</strong> ${formatApplicationDate(applicationDate)}</p>
                         <p><strong>Status:</strong> <span class="application-status status-${app.status.toLowerCase()}">${app.status}</span></p>
                         <div class="job-actions">
-                            ${app.status.toLowerCase() === 'pending' ? `
-                                <button class="btn btn-success btn-small" onclick="updateApplicationStatus(${applicationId}, 'accepted')">Accept</button>
-                                <button class="btn btn-danger btn-small" onclick="updateApplicationStatus(${applicationId}, 'rejected')">Reject</button>
-                            ` : ''}
+                        ${app.status.toLowerCase() === 'pending' ? `
+                        	    <button class="btn btn-success btn-small" onclick="updateApplicationStatus(${applicationId}, 'accepted')">Accept</button>
+                        	    <button class="btn btn-danger btn-small" onclick="updateApplicationStatus(${applicationId}, 'rejected')">Reject</button>
+                        	` : ''}
                         </div>
                     </div>`;
                 applicationsList.append(appCard);
@@ -772,19 +776,34 @@ function deleteJob(jobId) {
 function viewApplication(applicationId) { alert(`Viewing application ID: ${applicationId}`); }
 
 function updateApplicationStatus(applicationId, status) {
+    if (!confirm(`Are you sure you want to ${status} this application?`)) {
+        return;
+    }
+    
     $.ajax({
-        url: `/Secure-Online-Job-Portal-System/applications/${applicationId}/status`,
+        url: `/Secure-Online-Job-Portal-System/applications/${applicationId}/status?status=${status}`,
         method: "PUT",
-        contentType: "application/json",
-        headers: { "Authorization": "Bearer " + authToken },
-        data: JSON.stringify({ status: status }),
-        success: function() {
-            alert(`Application ${status} successfully!`);
-            loadApplications();
-            loadDashboardData();
+        headers: { 
+            "Authorization": "Bearer " + authToken,
+            "Content-Type": "application/json"
         },
-        error: function() {
-            alert(`Failed to ${status} application`);
+        success: function(response) {
+            alert(response.message || "Application status updated successfully!");
+            
+            // Refresh the applications list to show updated status
+            loadApplications();
+        },
+        error: function(xhr) {
+            let errorMessage = "Error updating application status.";
+            if (xhr.responseText) {
+                try {
+                    const errorResponse = JSON.parse(xhr.responseText);
+                    errorMessage = errorResponse.message || errorResponse;
+                } catch (e) {
+                    errorMessage = xhr.responseText;
+                }
+            }
+            alert(errorMessage);
         }
     });
 }

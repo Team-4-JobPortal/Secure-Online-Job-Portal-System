@@ -13,5 +13,9 @@ public interface ApplicationService {
     
     // NEW METHODS
     List<Application> findApplicationsByUser(int userId);
+    
+ // ADD THIS METHOD
+    List<Application> findApplicationsByEmployer(int employerId);
+    
     boolean hasUserAppliedToJob(int userId, int jobId);
 }

@@ -55,4 +55,8 @@ public boolean hasUserAppliedToJob(int userId, int jobId) {
     return applicationDAO.existsByUserIdAndJobId(userId, jobId);
 }
  
+@Override
+public List<Application> findApplicationsByEmployer(int employerId) {
+    return applicationDAO.findApplicationsByEmployer(employerId);
+}
 }

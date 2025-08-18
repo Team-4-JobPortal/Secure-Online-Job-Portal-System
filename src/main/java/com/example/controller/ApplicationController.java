@@ -79,6 +79,32 @@ public class ApplicationController {
                     .body("Error fetching applications: " + e.getMessage());
         }
     }
+    
+    @GetMapping("/my-job-applications")
+    public ResponseEntity<?> getApplicationsForMyJobs(Authentication authentication) {
+        try {
+            String email = authentication.getName();
+            User currentUser = userService.findByemail(email);
+            
+            if (currentUser == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("User not found!");
+            }
+            
+            // Only employers should access this endpoint
+            if (!"employer".equalsIgnoreCase(currentUser.getRole())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("Only employers can view applications for their jobs!");
+            }
+            
+            List<Application> jobApplications = appService.findApplicationsByEmployer(currentUser.getUser_id());
+            return ResponseEntity.ok(jobApplications);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error fetching applications: " + e.getMessage());
+        }
+    }
 
     // Get dashboard statistics for current user
 //    @GetMapping("/stats")
@@ -139,6 +165,69 @@ public class ApplicationController {
                     .body("Error checking application status: " + e.getMessage());
         }
     }
+    
+ // Update application status (Accept/Reject) - Only for employers
+    @PutMapping("/{id}/status")
+    public ResponseEntity<?> updateApplicationStatus(@PathVariable int id, 
+                                                   @RequestParam String status, 
+                                                   Authentication authentication) {
+        try {
+            String email = authentication.getName();
+            User currentUser = userService.findByemail(email);
+            
+            if (currentUser == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("User not found!");
+            }
+            
+            // Only employers can update application status
+            if (!"employer".equalsIgnoreCase(currentUser.getRole())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("Only employers can update application status!");
+            }
+            
+            Application application = appService.findAppById(id);
+            if (application == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Application not found!");
+            }
+            
+            // Check if this application belongs to a job posted by current employer
+            if (application.getJob().getUser().getUser_id() != currentUser.getUser_id()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("You can only update applications for your own jobs!");
+            }
+            
+            // Only allow status change for pending applications
+            if (!"Pending".equalsIgnoreCase(application.getStatus())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("You can only update pending applications!");
+            }
+            
+            // Validate status values
+            if (!"accepted".equalsIgnoreCase(status) && !"rejected".equalsIgnoreCase(status)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Status must be either 'accepted' or 'rejected'!");
+            }
+            
+            // Update status - capitalize first letter
+            String newStatus = status.substring(0, 1).toUpperCase() + status.substring(1).toLowerCase();
+            application.setStatus(newStatus);
+            
+            appService.updateApp(application);
+            
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Application status updated successfully!");
+            response.put("newStatus", newStatus);
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error updating application status: " + e.getMessage());
+        }
+    }
+
 
     // Withdraw application
     @DeleteMapping("/{id}/withdraw")

@@ -74,4 +74,14 @@ public class ApplicationDAOImpl implements ApplicationDAO{
 	        Long count = query.uniqueResult();
 	        return count != null && count > 0;
 	    }
+	    
+	    @Override
+	    public List<Application> findApplicationsByEmployer(int employerId) {
+	        String hql = "FROM Application a WHERE a.job.user.user_id = :employerId ORDER BY a.application_id DESC";  // Fixed parameter name
+	        Query<Application> query = getSession().createQuery(hql, Application.class);
+	        query.setParameter("employerId", employerId);  // Fixed parameter name
+	        return query.getResultList();
+	    }
+
+
 }

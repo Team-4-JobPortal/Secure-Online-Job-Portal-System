@@ -67,8 +67,23 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public void update(User user) {
-    	
+		// Ensure bidirectional links are intact before update
+        if (user.getCandidateProfile() != null) {
+            user.getCandidateProfile().setUser(user);
+        }
+        if (user.getEmployerProfile() != null) {
+            user.getEmployerProfile().setUser(user);
+        }
+
         getSession().update(user);
+
+        // Persist nested profiles explicitly to be safe
+        if (user.getCandidateProfile() != null) {
+            getSession().saveOrUpdate(user.getCandidateProfile());
+        }
+        if (user.getEmployerProfile() != null) {
+            getSession().saveOrUpdate(user.getEmployerProfile());
+        }
     }
 
     @Override

@@ -14,4 +14,6 @@ public interface ApplicationDAO {
  // NEW METHODS
     List<Application> findByUserId(int userId);
     boolean existsByUserIdAndJobId(int userId, int jobId);
+    List<Application> findApplicationsByEmployer(int employerId);
+    
 }
