@@ -601,7 +601,12 @@ function resetSubmitButton() {
 }
 
 function formatDeadline(dateString) {
-    return dateString ? dateString + 'T23:59:59Z' : null;
+    
+	if(!dateString) return null;
+	
+	const date - new Date(dateString);
+	date.setHours(23,59,59,999);
+	return date.toISOString();
 }
 
 function showAlert(message, type) {
