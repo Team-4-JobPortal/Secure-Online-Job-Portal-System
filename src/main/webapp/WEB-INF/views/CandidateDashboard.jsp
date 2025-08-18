@@ -562,8 +562,8 @@
                 <div class="stat-label">Shortlisted</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="jobsViewed">0</div>
-                <div class="stat-label">Jobs Viewed</div>
+                <div class="stat-number" id="rejectedApplications">0</div>
+                <div class="stat-label">Rejected Applications</div>
             </div>
         </div>
 
@@ -572,10 +572,7 @@
     <p>Loading jobs...</p>
 </div>
 
-<h3 style="margin-top:24px;">Recent Job Matches</h3>
-<div id="recommendedJobs">
-    <p>Loading job recommendations...</p>
-</div>
+
         
     </div>
 
@@ -809,7 +806,7 @@
         } else if (tabId === 'overview') {
             loadDashboardData();
             loadAllJobsForOverview();   // NEW
-            loadRecommendedJobs();
+            
         } else if (tabId === 'profile') {
             loadProfile();
         }
@@ -822,37 +819,29 @@
 
     // Dashboard data
     function loadDashboardData() {
-        $.ajax({
-            url: "/Secure-Online-Job-Portal-System/applications/stats",
-            method: "GET",
-            headers: { "Authorization": "Bearer " + authToken },
-            success: function(data) {
-                $("#totalApplications").text(data.totalApplications || 0);
-                $("#pendingApplications").text(data.pendingApplications || 0);
-                $("#shortlistedApplications").text(data.shortlistedApplications || 0);
-                $("#jobsViewed").text(data.jobsViewed || 0);
-            },
-            error: function() {
-                console.log("Error loading dashboard stats");
-            }
-        });
-    }
+    $.ajax({
+        url: "/Secure-Online-Job-Portal-System/applications/candidate/stats",
+        method: "GET",
+        headers: { "Authorization": "Bearer " + authToken },
+        success: function(data) {
+            console.log("Dashboard stats received:", data); // DEBUG
+            $("#totalApplications").text(data.totalApplications || 0);
+            $("#pendingApplications").text(data.pendingApplications || 0);
+            $("#shortlistedApplications").text(data.shortlistedApplications || 0);
+            $("#rejectedApplications").text(data.rejectedApplications || 0);
+        },
+        error: function(xhr) {
+            console.error("Error loading dashboard stats:", xhr);
+            
+            $("#totalApplications").text(0);
+            $("#pendingApplications").text(0);
+            $("#shortlistedApplications").text(0);
+            $("#rejectedApplications").text(0);
+        }
+    });
+}
 
-    // Load recommended jobs for overview
-    function loadRecommendedJobs() {
-        $.ajax({
-            url: "/Secure-Online-Job-Portal-System/jobs/recommended",
-            method: "GET",
-            headers: { "Authorization": "Bearer " + authToken },
-            success: function(jobs) {
-                displayJobs(jobs, $("#recommendedJobs"), true);
-            },
-            error: function() {
-                $("#recommendedJobs").html("<p>Unable to load job recommendations at the moment.</p>");
-            }
-        });
-    }
-
+    
     // Search jobs
     function searchJobs() {
         const keyword = $("#searchKeyword").val().trim();
@@ -877,8 +866,12 @@
             success: function(jobs) {
                 displayJobs(jobs, $("#jobsResults"));
             },
-            error: function() {
+            error: function(error) {
+            		console.log(error);
                 $("#jobsResults").html("<p>Error searching for jobs. Please try again.</p>");
+            		
+            		//$("#jobsResults")
+            		
             }
         });
     }
@@ -920,9 +913,9 @@
         const isApplied = appliedJobIds.has(jobId);
         
         const salaryRange = job.min_salary && job.max_salary
-            ? `$${job.min_salary} - $${job.max_salary}`
-            : job.min_salary ? `From $${job.min_salary}`
-            : job.max_salary ? `Up to $${job.max_salary}`
+            ? `₹${job.min_salary} - ₹${job.max_salary}`
+            : job.min_salary ? `From ₹${job.min_salary}`
+            : job.max_salary ? `Up to ₹${job.max_salary}`
             : 'Salary negotiable';
 
         const deadline = job.deadline ? new Date(job.deadline).toLocaleDateString() : "No deadline";
@@ -993,9 +986,9 @@
         jobs.forEach(job => {
             const isApplied = appliedJobIds.has(job.job_id);
             const salaryRange = job.min_salary && job.max_salary
-                ? `$${job.min_salary} - $${job.max_salary}`
-                : job.min_salary ? `From $${job.min_salary}`
-                : job.max_salary ? `Up to $${job.max_salary}`
+                ? `₹${job.min_salary} - ₹${job.max_salary}`
+                : job.min_salary ? `From ₹${job.min_salary}`
+                : job.max_salary ? `Up to ₹${job.max_salary}`
                 : 'Salary negotiable';
 
             const deadline = job.deadline ? new Date(job.deadline).toLocaleDateString() : "No deadline";
@@ -1141,72 +1134,60 @@ function loadMyApplications() {
 
 
     // Display applications function
-    function displayMyApplications(applications) {
-        const container = $("#applicationsList");
-        container.html("");
+   function displayMyApplications(applications) {
+    const container = $("#applicationsList");
+    container.html("");
 
-        if (!applications || applications.length === 0) {
-            container.html("<p>You haven't applied to any jobs yet. <a href='#' onclick='showTab(\"search-jobs\", null)'>Browse available jobs</a> to get started!</p>");
-            return;
-        }
-
-        applications.forEach(app => {
-            const applicationDate = new Date(app.applicationDate).toLocaleDateString();
-            const job = app.job;
-            const companyName = job.user && job.user.employerProfile 
-            ? job.user.employerProfile.companyName 
-            : job.user?.firstName || "Company";
-            
-            const appCard = `
-                <div class="application-card">
-                    <div class="job-header">
-                        <div>
-                            <div class="job-title">${escapeHtml(job.title)}</div>
-                            <div class="company-name">${escapeHtml(companyName)}</div>
-                        </div>
-                        <span class="application-status status-${app.status.toLowerCase()}">${escapeHtml(app.status)}</span>
-                    </div>
-                    <div class="job-details">
-                        <div class="job-detail">📍 ${escapeHtml(job.location)}</div>
-                        <div class="job-detail">📅 Applied: ${applicationDate}</div>
-                        <div class="job-detail">🆔 App ID: ${app.application_id}</div>
-                    </div>
-                    <div class="job-description">
-                        ${escapeHtml((app.coverLetter || '').substring(0, 200))}${(app.coverLetter && app.coverLetter.length > 200) ? '...' : ''}
-                    </div>
-                    <div class="job-actions">
-                        <button class="btn btn-info btn-small" onclick="viewApplicationDetails(${app.applicationId})">View Details</button>
-                        ${app.status === 'PENDING' ? `<button class="btn btn-outline btn-small" onclick="withdrawApplication(${app.applicationId})">Withdraw</button>` : ''}
-                    </div>
-                </div>`;
-            container.append(appCard);
-        });
-
-        // Update applied job IDs
-        appliedJobIds.clear();
-        applications.forEach(app => {
-            if (app && app.job && typeof app.job.job_id !== 'undefined') {
-                appliedJobIds.add(app.job.job_id);
-            }
-        });
+    if (!applications || applications.length === 0) {
+        container.html("<p>You haven't applied to any jobs yet. <a href='#' onclick='showTab(\"search-jobs\", null)'>Browse available jobs</a> to get started!</p>");
+        return;
     }
 
-  
-    // View application details
-    function viewApplicationDetails(applicationId) {
-        $.ajax({
-            url: `/Secure-Online-Job-Portal-System/applications/${applicationId}`,
-            method: "GET",
-            headers: { "Authorization": "Bearer " + authToken },
-            success: function(application) {
-                // Replace alert with a modal if desired
-                alert(`Application Status: ${application.status}\nCover Letter: ${application.coverLetter || ''}`);
-            },
-            error: function() {
-                alert("Error loading application details");
-            }
-        });
+    applications.forEach(app => {
+        const applicationDate = app.applicationDate ? 
+            new Date(app.applicationDate).toLocaleDateString() : 
+            'N/A';
+        const job = app.job;
+        const companyName = job.user && job.user.employerProfile 
+            ? job.user.employerProfile.companyName 
+            : job.user?.firstName || "Company";
+        
+        const appCard = `
+            <div class="application-card">
+                <div class="job-header">
+                    <div>
+                        <div class="job-title">${escapeHtml(job.title)}</div>
+                        <div class="company-name">${escapeHtml(companyName)}</div>
+                    </div>
+                    <span class="application-status status-${app.status.toLowerCase()}">${escapeHtml(app.status)}</span>
+                </div>
+                <div class="job-details">
+                    <div class="job-detail">📍 ${escapeHtml(job.location)}</div>
+                    <div class="job-detail">📅 Applied: ${applicationDate}</div>
+                </div>
+                <div class="job-description">
+                    ${escapeHtml((app.coverLetter || '').substring(0, 200))}${(app.coverLetter && app.coverLetter.length > 200) ? '...' : ''}
+                </div>
+                ${app.status === 'PENDING' ? `
+                    <div class="job-actions">
+                        <button class="btn btn-outline btn-small" onclick="withdrawApplication(${app.application_id})">Withdraw</button>
+                    </div>
+                ` : ''}
+            </div>`;
+        container.append(appCard);
+    });
+
+    // Update applied job IDs
+    appliedJobIds.clear();
+    applications.forEach(app => {
+        if (app && app.job && typeof app.job.job_id !== 'undefined') {
+            appliedJobIds.add(app.job.job_id);
         }
+    });
+}
+
+  
+    
 
     // Withdraw application
     function withdrawApplication(applicationId) {

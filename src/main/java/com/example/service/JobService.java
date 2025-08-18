@@ -1,6 +1,8 @@
 package com.example.service;
 
 import com.example.entity.Job;
+import com.example.exception.JobNotFoundException;
+
 import java.util.List;
 
 public interface JobService {
@@ -17,5 +19,6 @@ public interface JobService {
     
     List<Job> getJobsByEmployer(String email);
 
-    List<Job> searchJobs(String keyword, String location, Integer minSalary, Integer maxSalary);
+    List<Job> searchJobs(String keyword, String location, Integer minSalary, Integer maxSalary) throws JobNotFoundException;
+	List<Job> findJobsByEmployer(int user_id);
 }

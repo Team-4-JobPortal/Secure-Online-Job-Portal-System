@@ -19,4 +19,6 @@ public interface JobDao {
     void delete(int id);
 
     List<Job> searchJobs(String keyword, String location, Integer minSalary, Integer maxSalary);
+
+	List<Job> findByEmployerUserid(int user_id);
 }

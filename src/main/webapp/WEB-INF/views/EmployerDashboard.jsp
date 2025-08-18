@@ -420,10 +420,7 @@
                 </div>
             </div>
 
-            <h3>Recent Applications</h3>
-            <div id="recentApplications">
-                <p>No recent applications to display.</p>
-            </div>
+            
         </div>
 
         <!-- Post Job Tab -->
@@ -636,7 +633,7 @@ function getCookie(name) {
 // Dashboard data
 function loadDashboardData() {
     $.ajax({
-        url: "/jobs/employer/stats",
+        url: "/Secure-Online-Job-Portal-System/applications/employer/stats",
         method: "GET",
         headers: { "Authorization": "Bearer " + authToken },
         success: function(data) {
@@ -647,8 +644,7 @@ function loadDashboardData() {
         }
     });
 }
-
-// My Jobs
+//My Jobs
 function loadMyJobs() {
     const jobsList = $("#jobsList");
     jobsList.html("<p>Loading jobs...</p>");
@@ -665,10 +661,10 @@ function loadMyJobs() {
             }
             jobs.forEach(job => {
                 const salaryRange = job.min_salary && job.max_salary
-                			? `₹${job.min_salary} - ₹${job.max_salary}`
-                        : job.min_salary ? `From ₹${job.min_salary}`
-                        : job.max_salary ? `Up to ₹${job.max_salary}`
-                        : 'Salary negotiable';
+                    ? `₹${job.min_salary} - ₹${job.max_salary}`
+                    : job.min_salary ? `From ₹${job.min_salary}`
+                    : job.max_salary ? `Up to ₹${job.max_salary}`
+                    : 'Salary negotiable';
                         
                 const deadline = job.deadline ? new Date(job.deadline).toLocaleDateString() : "No deadline";
                 
@@ -682,8 +678,6 @@ function loadMyJobs() {
                         </div>
                         <p>${escapeHtml(job.description)}</p>
                         <div class="job-actions">
-                            <button class="btn btn-info btn-small" onclick="viewApplications(${job.job_id})">View Applications</button>
-                            <button class="btn btn-success btn-small" onclick="editJob(${job.job_id})">Edit</button>
                             <button class="btn btn-danger btn-small" onclick="deleteJob(${job.job_id})">Delete</button>
                         </div>
                     </div>`;
@@ -695,6 +689,7 @@ function loadMyJobs() {
         }
     });
 }
+
 
 // Applications
 function loadApplications() {

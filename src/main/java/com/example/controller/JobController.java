@@ -80,14 +80,15 @@ public class JobController {
         return jobService.getAllJobs();
     }
 
-    // Candidate: Search Jobs
+ // Candidate: Search Jobs
     @GetMapping("/search")
     public List<Job> searchJobs(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String location,
-            @RequestParam(required = false) Integer minSalary,
-            @RequestParam(required = false) Integer maxSalary) {
-        return jobService.searchJobs(keyword, location, minSalary, maxSalary);
+            @RequestParam(required = false) String minSalary,
+            @RequestParam(required = false) String maxSalary) {
+  				 
+        return jobService.searchJobs(keyword, location, Integer.parseInt(minSalary), Integer.parseInt(maxSalary));
     }
 
     // Common: Get Job by ID

@@ -10,8 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import com.example.entity.Application;
+import com.example.entity.Job;
 import com.example.entity.User;
 import com.example.service.ApplicationService;
+import com.example.service.JobService;
 import com.example.service.UserService;
  
 @RestController
@@ -23,6 +25,9 @@ public class ApplicationController {
     
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private JobService jobService;
     
     @GetMapping("/list")
     public List<Application> listUsers() {
@@ -107,39 +112,40 @@ public class ApplicationController {
     }
 
     // Get dashboard statistics for current user
-//    @GetMapping("/stats")
-//    public ResponseEntity<?> getDashboardStats(Authentication authentication) {
-//        try {
-//            String email = authentication.getName();
-//            User currentUser = userService.findByemail(email);
-//            
-//            if (currentUser == null) {
-//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-//                        .body("User not found!");
-//            }
-//            
-//            if (!"candidate".equalsIgnoreCase(currentUser.getRole())) {
-//                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-//                        .body("Only candidates can view application stats!");
-//            }
-//            
-//     //       List<Application> userApplications = appService.findApplicationsByUser(currentUser.getUser_id());
-//            
-//            Map<String, Integer> stats = new HashMap<>();
-//            stats.put("totalApplications", userApplications.size());
-//            stats.put("pendingApplications", (int) userApplications.stream()
-//                    .filter(app -> "Pending".equalsIgnoreCase(app.getStatus())).count());
-//            stats.put("shortlistedApplications", (int) userApplications.stream()
-//                    .filter(app -> "Shortlisted".equalsIgnoreCase(app.getStatus())).count());
-//            stats.put("jobsViewed", 0); // You can implement job view tracking separately
-//            
-//            return ResponseEntity.ok(stats);
-//            
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body("Error fetching stats: " + e.getMessage());
-//        }
-//    }
+    @GetMapping("/candidate/stats")
+    public ResponseEntity<?> getDashboardStats(Authentication authentication) {
+        try {
+            String email = authentication.getName();
+            User currentUser = userService.findByemail(email);
+            
+            if (currentUser == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("User not found!");
+            }
+            
+            if (!"candidate".equalsIgnoreCase(currentUser.getRole())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("Only candidates can view application stats!");
+            }
+            
+            List<Application> userApplications = appService.findApplicationsByUser(currentUser.getUser_id());
+            
+            Map<String, Integer> stats = new HashMap<>();
+            stats.put("totalApplications", userApplications.size());
+            stats.put("pendingApplications", (int) userApplications.stream()
+                    .filter(app -> "Pending".equalsIgnoreCase(app.getStatus())).count());
+            stats.put("shortlistedApplications", (int) userApplications.stream()
+                    .filter(app -> "Accepted".equalsIgnoreCase(app.getStatus())).count());
+            stats.put("rejectedApplications", (int) userApplications.stream()
+                    .filter(app -> "Rejected".equalsIgnoreCase(app.getStatus())).count());
+
+            return ResponseEntity.ok(stats);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error fetching stats: " + e.getMessage());
+        }
+    }
 
     // Check if user has already applied to a specific job
     @GetMapping("/check-applied/{jobId}")
@@ -227,6 +233,52 @@ public class ApplicationController {
                     .body("Error updating application status: " + e.getMessage());
         }
     }
+    
+    @GetMapping("/employer/stats")
+    public ResponseEntity<?> getEmployerDashboardStats(Authentication authentication) {
+        try {
+            String email = authentication.getName();
+            User currentUser = userService.findByemail(email);
+
+            if (currentUser == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("User not found!");
+            }
+
+            if (!"employer".equalsIgnoreCase(currentUser.getRole())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("Only employers can view these stats!");
+            }
+
+            // 1. Fetch jobs posted by employer (assuming you have a JobService)
+            List<Job> jobsPosted = jobService.findJobsByEmployer(currentUser.getUser_id());
+            int totalJobs = jobsPosted.size();
+
+            // 2. Fetch applications for all jobs of this employer
+            List<Application> allApplications = appService.findApplicationsByEmployer(currentUser.getUser_id());
+            int totalApplications = allApplications.size();
+
+            int pendingApplications = (int) allApplications.stream()
+                    .filter(app -> "Pending".equalsIgnoreCase(app.getStatus()))
+                    .count();
+
+            int hiredCandidates = (int) allApplications.stream()
+                    .filter(app -> "Accepted".equalsIgnoreCase(app.getStatus()))
+                    .count();
+
+            Map<String, Integer> stats = new HashMap<>();
+            stats.put("totalJobs", totalJobs);
+            stats.put("totalApplications", totalApplications);
+            stats.put("pendingApplications", pendingApplications);
+            stats.put("hiredCandidates", hiredCandidates);
+
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error fetching stats: " + e.getMessage());
+        }
+    }
+
 
 
     // Withdraw application

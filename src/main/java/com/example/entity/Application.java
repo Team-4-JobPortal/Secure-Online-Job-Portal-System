@@ -1,5 +1,7 @@
 package com.example.entity;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,7 +10,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 
 @Entity
@@ -32,6 +37,16 @@ public class Application {
     @ManyToOne
     @JoinColumn(name = "job_id")       // foreign key column in Applications table
     private Job job;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @Column(name = "application_date")
+    private LocalDateTime applicationDate;
+    
+ // Auto-set application date when creating
+    @PrePersist
+    protected void onCreate() {
+        this.applicationDate = LocalDateTime.now();
+    }
 
     // --- Getters & Setters ---
     public int getApplication_id() {
@@ -71,5 +86,13 @@ public class Application {
     }
     public void setCoverLetter(String coverLetter) {
         this.coverLetter = coverLetter;
+    }
+    
+    public LocalDateTime getApplicationDate() {
+        return applicationDate;
+    }
+
+    public void setApplicationDate(LocalDateTime applicationDate) {
+        this.applicationDate = applicationDate;
     }
 }
