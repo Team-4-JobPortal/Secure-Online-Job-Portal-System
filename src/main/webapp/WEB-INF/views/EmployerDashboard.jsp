@@ -571,7 +571,9 @@ function postJob() {
         min_salary: minSalary,
         max_salary: maxSalary,
         description: $("#jobDescription").val().trim(),
+        
         deadline: formatDeadline($("#applicationDeadline").val())
+        
     };
 
     $.ajax({
@@ -601,7 +603,12 @@ function resetSubmitButton() {
 }
 
 function formatDeadline(dateString) {
-    return dateString ? dateString + 'T23:59:59Z' : null;
+	if (!dateString) return null;
+	
+	const date = new Date(dateString);  
+	date.setHours(23, 59, 59, 999);    // Set the time to 23:59:59.999
+	//console.log(date.toISOString);
+	return date.toISOString();
 }
 
 function showAlert(message, type) {
@@ -654,11 +661,13 @@ function loadMyJobs() {
             }
             jobs.forEach(job => {
                 const salaryRange = job.min_salary && job.max_salary
-                    ? `$${job.min_salary} - $${job.max_salary}`
-                    : job.min_salary ? `From $${job.min_salary}`
-                    : job.max_salary ? `Up to $${job.max_salary}`
-                    : 'Salary negotiable';
+                			? `₹${job.min_salary} - ₹${job.max_salary}`
+                        : job.min_salary ? `From ₹${job.min_salary}`
+                        : job.max_salary ? `Up to ₹${job.max_salary}`
+                        : 'Salary negotiable';
+                        
                 const deadline = job.deadline ? new Date(job.deadline).toLocaleDateString() : "No deadline";
+                
                 const jobCard = `
                     <div class="job-card">
                         <div class="job-title">${escapeHtml(job.title)}</div>

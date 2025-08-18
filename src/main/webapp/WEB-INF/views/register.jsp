@@ -202,7 +202,7 @@
   <script>
     // Server configuration
     const API_BASE_URL = 'http://localhost:8080/Secure-Online-Job-Portal-System';
-    const REGISTRATION_ENDPOINT = API_BASE_URL + '/users'; // Your Spring MVC POST endpoint
+    const REGISTRATION_ENDPOINT = API_BASE_URL + '/auth/register'; // Your Spring MVC POST endpoint
 
     function showRoleSpecificSection() {
       const role = document.getElementById('userRole').value;

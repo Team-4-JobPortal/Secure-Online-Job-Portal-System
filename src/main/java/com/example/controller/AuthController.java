@@ -119,6 +119,13 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
     }
+    
+ // register
+    @PostMapping("/register")
+    public void addUser(@RequestBody User user) {
+        
+        userService.saveUser(user);
+    }
 
 
     

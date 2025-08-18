@@ -29,11 +29,7 @@ public class UserController {
         return userService.findByUserId(id);
     }
 
-    @PostMapping
-    public void addUser(@RequestBody User user) {
-        
-        userService.saveUser(user);
-    }
+    
 
     @PutMapping("/{id}")
     public void updateUser(@PathVariable int id, @RequestBody User user) {
