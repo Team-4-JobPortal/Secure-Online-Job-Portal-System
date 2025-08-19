@@ -253,6 +253,13 @@ Authorization: Bearer {JWT_TOKEN}
 }
 ```
 
+### 14.Withdraw Application
+```json
+DELETE http://localhost:8080/applications/52/withdraw
+Content-Type: application/json
+Authorization: Bearer {CANDIDATE_JWT_TOKEN}
+```
+
 ---
 
 ## Validation & Exception Handling (For Viva)
