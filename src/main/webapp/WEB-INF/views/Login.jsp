@@ -532,7 +532,7 @@
                 <div style="position: relative;">
                     <span class="input-icon">📧</span>
                     <input type="email" id="email" name="email" class="form-control with-icon" 
-                           placeholder="Enter your email address" required autocomplete="email">
+                           placeholder="Enter your email address" autocomplete="email">
                 </div>
                 <div class="error" id="emailError">Please enter a valid email address</div>
             </div>
@@ -542,7 +542,7 @@
                 <div class="password-container">
                     <span class="input-icon">🔒</span>
                     <input type="password" id="password" name="password" class="form-control with-icon" 
-                           placeholder="Enter your password" required autocomplete="current-password">
+                           placeholder="Enter your password" autocomplete="current-password">
                     <span class="password-toggle" onclick="togglePassword()">👁️</span>
                 </div>
                 <div class="error" id="passwordError">Password is required</div>
@@ -550,7 +550,7 @@
 
             <div class="form-group">
                 <label for="userRole">Login As <span class="required">*</span></label>
-                <select id="userRole" name="userRole" class="form-control" required>
+                <select id="userRole" name="userRole" class="form-control">
                     <option value="">Select your role...</option>
                     <option value="candidate"><span class="role-icon">👤</span>Job Seeker (Candidate)</option>
                     <option value="employer"><span class="role-icon">🏢</span>Employer</option>
@@ -619,7 +619,7 @@ $(document).ready(function(){
     $('.error').hide();
     $('.form-control').removeClass('error-input success-input');
 
-    if(!email){
+   if(!email){
       $('#emailError').text('Email is required').show();
       $('#email').addClass('error-input');
       valid = false;
@@ -650,7 +650,6 @@ $(document).ready(function(){
     } else {
       $('#userRole').addClass('success-input');
     }
-
     if(!valid) return;
 
     // Cookie setter helper
@@ -688,7 +687,7 @@ $(document).ready(function(){
           $('#loginButton').attr('disabled', false).text('Sign In');
         }
       },
-      error: function(xhr, status, error) {
+/*       error: function(xhr, status, error) {
     	    let errMsg = 'Invalid Email or Password';
     	    if (xhr.responseJSON && xhr.responseJSON.message) {
     	        errMsg = xhr.responseJSON.message;
@@ -697,6 +696,20 @@ $(document).ready(function(){
     	    }
     	    alert(errMsg);
     	    console.error('Login failed:', error, xhr.responseText);
+    	    $('#loginButton').attr('disabled', false).text('Sign In');
+    	} */
+    	error: function(xhr, status, error) {
+    	    if (xhr.status === 400 && xhr.responseJSON) {
+    	        // Show field-specific validation errors
+    	        Object.keys(xhr.responseJSON).forEach(function(field) {
+    	            let msg = xhr.responseJSON[field];
+    	            $('#' + field + 'Error').text(msg).show();
+    	            $('#' + field).addClass('error-input');
+    	        });
+    	    } else {
+    	        let errMsg = xhr.responseJSON?.message || 'Invalid Email or Password';
+    	        alert(errMsg);
+    	    }
     	    $('#loginButton').attr('disabled', false).text('Sign In');
     	}
 

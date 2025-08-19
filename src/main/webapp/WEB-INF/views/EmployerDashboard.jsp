@@ -141,6 +141,10 @@
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
+        .form-control.error {
+            border-color: #e74c3c;
+        }
+
         .form-row {
             display: flex;
             gap: 20px;
@@ -375,6 +379,15 @@
             .job-details {
                 flex-direction: column;
             }
+            .error-message {
+	            color: #e74c3c;
+	            font-size: 12px;
+	            margin-top: 5px;
+	            display: none;
+        	}
+        	.alert-danger{
+                color: red;
+            }
         }
     </style>
 </head>
@@ -434,11 +447,13 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="jobTitle">Job Title *</label>
-                        <input type="text" id="jobTitle" name="title" class="form-control" required>
+                        <input type="text" id="jobTitle" name="title" class="form-control">
+                        <div class="error-message" id="jobTitleError"></div>
                     </div>
                     <div class="form-group">
                         <label for="location">Location *</label>
-                        <input type="text" id="location" name="location" class="form-control" required>
+                        <input type="text" id="location" name="location" class="form-control">
+                        <div class="error-message" id="locationError"></div>
                     </div>
                 </div>
 
@@ -446,21 +461,25 @@
                     <div class="form-group">
                         <label for="minSalary">Minimum Salary</label>
                         <input type="number" id="minSalary" name="min_salary" class="form-control" min="0">
+                        <div class="error-message" id="minSalaryError"></div>
                     </div>
                     <div class="form-group">
                         <label for="maxSalary">Maximum Salary</label>
                         <input type="number" id="maxSalary" name="max_salary" class="form-control" min="0">
+                        <div class="error-message" id="maxSalaryError"></div>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="jobDescription">Job Description *</label>
-                    <textarea id="jobDescription" name="description" class="form-control" required placeholder="Enter detailed job description..."></textarea>
+                    <textarea id="jobDescription" name="description" class="form-control" placeholder="Enter detailed job description..."></textarea>
+                	<div class="error-message" id="jobDescriptionError"></div>
                 </div>
 
                 <div class="form-group">
                     <label for="applicationDeadline">Application Deadline</label>
                     <input type="date" id="applicationDeadline" name="deadline" class="form-control">
+                    <div class="error-message" id="applicationDeadlineError"></div>
                 </div>
 
                 <button type="submit" class="btn btn-primary" id="submitBtn">
@@ -503,8 +522,10 @@ $(document).ready(function() {
     setMinDate();
 
     $("#jobPostForm").submit(function(e) {
-        e.preventDefault();
-        postJob();
+    	 e.preventDefault();
+         if (validateForm()) {
+             postJob();
+         }
     });
 });
 
@@ -548,15 +569,80 @@ function setMinDate() {
     $("#applicationDeadline").attr("min", today);
 }
 
-// Job posting
-function postJob() {
-    const submitBtn = $("#submitBtn");
-    const submitText = $("#submitText");
 
-    submitBtn.prop("disabled", true);
-    submitText.html('<span class="loading"></span>Posting Job...');
-    showAlert('', '');
+//Client-side validation function
+function validateForm() {
+    let isValid = true;
+    clearErrors();
 
+    // Job Title validation
+    const jobTitle = $("#jobTitle").val().trim();
+    if (!jobTitle) {
+        showFieldError("jobTitle", "Job title is required");
+        isValid = false;
+    } else if (jobTitle.length < 3) {
+        showFieldError("jobTitle", "Job title must be at least 3 characters long");
+        isValid = false;
+    } else if (jobTitle.length > 150) {
+        showFieldError("jobTitle", "Job title cannot exceed 150 characters");
+        isValid = false;
+    }
+
+    // Location validation
+    const location = $("#location").val().trim();
+    if (!location) {
+        showFieldError("location", "Location is required");
+        isValid = false;
+    }
+
+    // Job Description validation
+    const jobDescription = $("#jobDescription").val().trim();
+    if (!jobDescription) {
+        showFieldError("jobDescription", "Job description is required");
+        isValid = false;
+    } else if (jobDescription.length > 1000) {
+        showFieldError("jobDescription", "Job description cannot exceed 1000 characters");
+        isValid = false;
+    }
+
+    // Salary validation (if both are provided)
+    const minSalary = parseInt($("#minSalary").val()) || 0;
+    const maxSalary = parseInt($("#maxSalary").val()) || 0;
+    if(minSalary==0){
+    	showFieldError("minSalary", "Min Salary is required");
+        isValid = false;
+    }
+    if(maxSalary==0){
+    	showFieldError("maxSalary", "Min Salary is required");
+        isValid = false;
+    }
+    if (maxSalary > 0 && minSalary > 0 && minSalary > maxSalary) {
+        showFieldError("maxSalary", "Maximum salary cannot be less than minimum salary");
+        isValid = false;
+    }
+ // Application Deadline validation
+    const applicationDeadline = $("#applicationDeadline").val().trim();
+
+    if (!applicationDeadline) {
+        showFieldError("applicationDeadline", "Application deadline is required");
+        isValid = false;
+    } else {
+        const deadlineDate = new Date(applicationDeadline);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // remove time part for comparison
+
+        if (isNaN(deadlineDate.getTime())) {
+            showFieldError("applicationDeadline", "Invalid date format");
+            isValid = false;
+        } else if (deadlineDate < today) {
+            showFieldError("applicationDeadline", "Application deadline cannot be in the past");
+            isValid = false;
+        }
+    }
+    return isValid;
+}
+
+function postJob(){
     const minSalary = parseInt($("#minSalary").val()) || 0;
     const maxSalary = parseInt($("#maxSalary").val()) || 0;
 
@@ -572,29 +658,37 @@ function postJob() {
         min_salary: minSalary,
         max_salary: maxSalary,
         description: $("#jobDescription").val().trim(),
-        
+        createdAt: new Date().toISOString().slice(0, 19),
         deadline: formatDeadline($("#applicationDeadline").val())
-        
     };
 
     $.ajax({
-        url: "/Secure-Online-Job-Portal-System/jobs/postJob",
-        method: "POST",
+        url: "./jobs/postJob",
+        type: "POST",
         contentType: "application/json",
-        headers: { "Authorization": "Bearer " + authToken },
+        headers: {
+            "Authorization": "Bearer " + authToken
+        },
         data: JSON.stringify(jobData),
-        success: function() {
-            showAlert('✅ Job posted successfully!', 'success');
+        success: function (response) {
             $("#jobPostForm")[0].reset();
+            showAlert('✅ Job posted successfully!', 'success');
             setMinDate();
             loadMyJobs();
             loadDashboardData();
             setTimeout(() => showTab('my-jobs'), 2000);
+            console.log("Job posted successfully!");
         },
-        error: function(xhr) {
-            showAlert('❌ ' + (xhr.responseText || 'Failed to post job'), 'error');
-        },
-        complete: resetSubmitButton
+        error: function (xhr) {
+            let errors = xhr.responseJSON;
+            let errorHtml = '<div class="alert"><ul>';
+            $.each(errors, function (field, message) {
+                errorHtml += "<li class='alert-danger'>" + field + ": " + message + "</li>";
+            });
+            errorHtml += "</ul></div>";
+            showAlert(errorHtml, 'error');
+            console.log(errorHtml);
+        }
     });
 }
 
@@ -602,7 +696,15 @@ function resetSubmitButton() {
     $("#submitBtn").prop("disabled", false);
     $("#submitText").html('Post Job');
 }
+function showFieldError(fieldId, message) {
+    $("#" + fieldId).addClass("error");
+    $("#" + fieldId + "Error").text(message).show();
 
+}
+function clearErrors() {
+    $(".form-control").removeClass("error");
+    $(".error-message").hide();
+}
 function formatDeadline(dateString) {
 	if (!dateString) return null;
 	

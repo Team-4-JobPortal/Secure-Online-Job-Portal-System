@@ -433,10 +433,10 @@
       e.preventDefault();
       closeAlert();
 
-      if (!validateForm()) {
+       if (!validateForm()) {
         showAlert('Please fix all validation errors before submitting', 'error');
         return;
-      }
+      } 
 
       setLoadingState(true);
 

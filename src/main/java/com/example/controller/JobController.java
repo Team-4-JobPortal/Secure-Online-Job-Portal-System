@@ -11,8 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/jobs")
@@ -28,14 +35,40 @@ public class JobController {
     private ApplicationService applicationService;
 
  // Employer: Create Job
+//    @PostMapping("/postJob")
+//    public ResponseEntity<?> createJob(@RequestBody Job job, Authentication authentication) {
+//        // Get logged-in username from JWT authentication
+//        String email = authentication.getName();
+//
+//        // Fetch user from DB
+//        User dbUser = userService.findByemail(email);
+//
+//        if (dbUser == null) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+//                    .body("User not found!");
+//        }
+//
+//        // Check role
+//        if (!"employer".equalsIgnoreCase(dbUser.getRole())) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+//                    .body("Only Employer can post jobs!");
+//        }
+//
+//        // Attach employer (user) to the job
+//        job.setUser(dbUser);
+//
+//        jobService.createJob(job);
+//
+//        return ResponseEntity.ok("Job created successfully!");
+//    }
+
+
     @PostMapping("/postJob")
-    public ResponseEntity<?> createJob(@RequestBody Job job, Authentication authentication) {
-        // Get logged-in username from JWT authentication
+    @ResponseBody
+    public ResponseEntity<?> createJob(@Valid @RequestBody Job job,
+                                       Authentication authentication) {
         String email = authentication.getName();
-
-        // Fetch user from DB
         User dbUser = userService.findByemail(email);
-
         if (dbUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("User not found!");
@@ -46,13 +79,13 @@ public class JobController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("Only Employer can post jobs!");
         }
-
-        // Attach employer (user) to the job
+        
         job.setUser(dbUser);
-
+        job.setCreatedAt(LocalDateTime.now());
+        // save job
         jobService.createJob(job);
-
-        return ResponseEntity.ok("Job created successfully!");
+        System.out.println("Job posted successfully");
+        return ResponseEntity.ok("Job posted successfully");
     }
 
     // Employer: Update Job
