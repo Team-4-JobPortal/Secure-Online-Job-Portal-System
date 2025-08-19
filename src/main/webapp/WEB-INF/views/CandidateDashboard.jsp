@@ -1234,7 +1234,7 @@ function loadMyApplications() {
                 <div class="job-description">
                     ${escapeHtml((app.coverLetter || '').substring(0, 200))}${(app.coverLetter && app.coverLetter.length > 200) ? '...' : ''}
                 </div>
-                ${app.status === 'PENDING' ? `
+                ${app.status === 'Pending' ? `
                     <div class="job-actions">
                         <button class="btn btn-outline btn-small" onclick="withdrawApplication(${app.application_id})">Withdraw</button>
                     </div>
