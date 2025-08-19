@@ -1,7 +1,16 @@
 package com.example.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import javax.persistence.*;
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Jobs")
@@ -12,21 +21,29 @@ public class Job {
     @Column(name = "job_id")
     private int job_id;
 
+    @NotBlank(message = "title is required")
+	@Size(min=3,max=150,message="Title must be atleast 3 characters") 
     private String title;
 
+    @NotBlank(message="Description is required")
+	@Size(max=1000,message="Description can't be greater than 1000 characters")
     private String description;
 
+    @NotBlank(message="location is required")
     private String location;
 
+   
     @Column(name = "min_salary")
     private int min_salary;
 
+    
     @Column(name = "max_salary")
     private int max_salary;
 
+    
     @Column(name = "posting_date")
-    private Date createdAt;
-
+    private LocalDateTime createdAt;
+    @NotNull
     @Column(name = "application_deadline")
     private Date deadline;
 
@@ -83,12 +100,12 @@ public class Job {
         this.max_salary = max_salary;
     }
 
-    public Date getCreatedAt() {
+    public  LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
+    public void setCreatedAt(LocalDateTime localDateTime) {
+        this.createdAt = localDateTime;
     }
 
     public Date getDeadline() {

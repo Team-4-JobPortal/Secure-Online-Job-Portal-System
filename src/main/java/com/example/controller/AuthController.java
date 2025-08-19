@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +13,7 @@ import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.dto.LoginRequest;
 import com.example.entity.User;
 import com.example.security.JwtUtil;
 import com.example.service.UserService;
@@ -30,22 +33,38 @@ public class AuthController {
 
     
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
-        String email = body.get("email");
-        String password = body.get("password");
-        String role = body.get("role");
+//    @PostMapping("/login")
+//    public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
+//        String email = body.get("email");
+//        String password = body.get("password");
+//        String role = body.get("role");
+//
+//        // 1. Authenticate the user by email and password
+//        try {
+//            authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(email, password)
+//            );
+//        } catch (BadCredentialsException ex) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+//                                 .body(Collections.singletonMap("message", "Invalid email or password"));
+//        }
 
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest user) {
+        String email = user.getEmail();
+        String password = user.getPassword();
+        String role = user.getRole();
+        
         // 1. Authenticate the user by email and password
         try {
             authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email, password)
             );
         } catch (BadCredentialsException ex) {
+        	System.out.println("{\"message\": \"Invalid email or password!\"}");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                                  .body(Collections.singletonMap("message", "Invalid email or password"));
         }
-
         // 2. Fetch user from DB
         User dbUser = userService.findByemail(email);
         if (dbUser == null) {
@@ -122,7 +141,7 @@ public class AuthController {
     
  // register
     @PostMapping("/register")
-    public void addUser(@RequestBody User user) {
+    public void addUser(@Valid @RequestBody User user) {
         
         userService.saveUser(user);
     }
