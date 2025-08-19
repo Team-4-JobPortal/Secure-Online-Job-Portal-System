@@ -87,8 +87,11 @@ public class JobController {
             @RequestParam(required = false) String location,
             @RequestParam(required = false) String minSalary,
             @RequestParam(required = false) String maxSalary) {
-  				 
-        return jobService.searchJobs(keyword, location, Integer.parseInt(minSalary), Integer.parseInt(maxSalary));
+  			
+    			int min = (minSalary.isEmpty())? 0:Integer.parseInt(minSalary);
+    			int max= (maxSalary.isEmpty())? 0:Integer.parseInt(maxSalary);
+    			  		
+        return jobService.searchJobs(keyword, location, min, max);
     }
 
     // Common: Get Job by ID

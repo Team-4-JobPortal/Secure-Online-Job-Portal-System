@@ -43,7 +43,7 @@ public class JobServiceImpl implements JobService {
     public List<Job> searchJobs(String keyword, String location, Integer minSalary, Integer maxSalary) {
         	List<Job> jobs = jobDao.searchJobs(keyword, location, minSalary, maxSalary);
         		
-        	if(jobs.isEmpty() || jobs == null) {
+        	if(jobs.isEmpty()) {
         		throw new JobNotFoundException("No jobs found matching your criteria.");
         	}
         	

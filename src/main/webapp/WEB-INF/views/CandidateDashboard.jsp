@@ -139,6 +139,33 @@
             font-weight: 600;
             font-size: 14px;
         }
+        
+        /* Add red asterisk after labels for required input fields */
+input[required] + label::after,
+input[required] ~ label::after,
+label[for] + input[required] ~ label::after {
+    content: ' *';
+    color: red;
+    font-weight: bold;
+    margin-left: 2px;
+}
+
+/* Or target by parent container */
+.filter-group:has(input[required]) label::after {
+    content: ' *';
+    color: red;
+    font-weight: bold;
+    margin-left: 2px;
+}
+
+/* Alternative approach - target the label directly */
+.required::after {
+    content: ' *';
+    color: red;
+    font-weight: bold;
+    margin-left: 2px;
+}
+        
 
         .form-control {
             width: 100%;
@@ -595,11 +622,11 @@
             <div class="filter-row">
                 <div class="filter-group">
                     <label for="filterMinSalary">Min Salary</label>
-                    <input type="number" id="filterMinSalary" class="form-control" placeholder="e.g., 50000">
+                    <input type="number" id="filterMinSalary" class="form-control" placeholder="e.g., 50000" required>
                 </div>
                 <div class="filter-group">
                     <label for="filterMaxSalary">Max Salary</label>
-                    <input type="number" id="filterMaxSalary" class="form-control" placeholder="e.g., 100000">
+                    <input type="number" id="filterMaxSalary" class="form-control" placeholder="e.g., 100000" required>
                 </div>
                 <div class="filter-group" style="display: flex; align-items: end;">
                     <button type="button" class="btn btn-primary" onclick="searchJobs()">Search Jobs</button>
@@ -842,13 +869,48 @@
 }
 
     
-    // Search jobs
+ // Search jobs
     function searchJobs() {
         const keyword = $("#searchKeyword").val().trim();
         const location = $("#searchLocation").val().trim();
         const minSalary = $("#filterMinSalary").val();
         const maxSalary = $("#filterMaxSalary").val();
+		
+        if (!minSalary) {
+            alert('Please enter the minimum salary');
+            $("#filterMinSalary").focus();
+            return;
+        }
 
+        if (!maxSalary) {
+            alert('Please enter the maximum salary');
+            $("#filterMaxSalary").focus();
+            return;
+        }
+
+        // Validate that both are numeric
+        if (isNaN(minSalary) || isNaN(maxSalary)) {
+            alert('Please enter valid numeric values for salary');
+            return;
+        }
+
+        // Validate range - min should not be greater than max
+        const minSal = parseInt(minSalary);
+        const maxSal = parseInt(maxSalary);
+        
+        if (minSal > maxSal) {
+            alert('Minimum salary cannot be greater than maximum salary');
+            $("#filterMaxSalary").focus();
+            return;
+        }
+
+        // Validate positive values
+        if (minSal < 0 || maxSal < 0) {
+            alert('Salary values must be positive');
+            return;
+        }
+
+        
         const searchParams = {
             keyword: keyword,
             location: location,
@@ -866,11 +928,15 @@
             success: function(jobs) {
                 displayJobs(jobs, $("#jobsResults"));
             },
-            error: function(error) {
-            		console.log(error);
-                $("#jobsResults").html("<p>Error searching for jobs. Please try again.</p>");
+            error: function(xhr) {
             		
-            		//$("#jobsResults")
+                let errorMsg = "Error searching for jobs.Please try again";
+                
+                if(xhr.responseJSON && xhr.responseJSON.message){
+                		errorMsg = xhr.responseJSON.message;
+                }
+          
+            		$("#jobsResults").html(`<p class='alert-error'>${errorMsg}</p>`);
             		
             }
         });
