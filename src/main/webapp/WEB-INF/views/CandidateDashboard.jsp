@@ -877,11 +877,15 @@
             success: function(jobs) {
                 displayJobs(jobs, $("#jobsResults"));
             },
-            error: function(error) {
-            		console.log(error);
-                $("#jobsResults").html("<p>Error searching for jobs. Please try again.</p>");
+            error: function(xhr) {
             		
-            		//$("#jobsResults")
+                let errorMsg = "Error searching for jobs.Please try again";
+                
+                if(xhr.responseJSON && xhr.responseJSON.message){
+                		errorMsg = xhr.responseJSON.message;
+                }
+          
+            		$("#jobsResults").html(`<p class='alert-error'>${errorMsg}</p>`);
             		
             }
         });

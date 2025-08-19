@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.dao.UserDAO;
 import com.example.entity.User;
+import com.example.exception.UserEmailNotFoundException;
 
 @Repository
 @Transactional
@@ -85,7 +86,11 @@ public class UserDAOImpl implements UserDAO {
 	            .createQuery("from User u where u.email = :email", User.class)
 	            .setParameter("email", email)
 	            .getResultList();
+		
+		if(users.isEmpty()) {
+			throw new UserEmailNotFoundException("No user found by the email: "+email);
+		}
 
-	    return users.isEmpty() ? null : users.get(0);
+	    return  users.get(0);
 	}
 }
