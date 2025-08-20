@@ -236,8 +236,7 @@ Authorization: Bearer {CANDIDATE_JWT_TOKEN}
 ### 11. Update Application Status (Employer)
 
 ```json
-PUT http://localhost:8080/applications/1/status?status=accepted
-Content-Type: application/json
+PUT http://localhost:8080/Secure-Online-Job-Portal-System/applications/15/status?status=accepted
 Authorization: Bearer {EMPLOYER_JWT_TOKEN}
 ```
 
@@ -278,7 +277,23 @@ DELETE http://localhost:8080/Secure-Online-Job-Portal-System/applications/12/wit
 Content-Type: application/json
 Authorization: Bearer {CANDIDATE_JWT_TOKEN}
 ```
+### 15. Get Employer Stats
 
+```json
+GET http://localhost:8080/Secure-Online-Job-Portal-System/applications/employer/stats
+Content-Type: application/json
+Authorization: Bearer {EMPLOYER_JWT_TOKEN}
+```
+
+**Expected Response:**
+```json
+{
+    "pendingApplications": 0,
+    "hiredCandidates": 4,
+    "totalJobs": 4,
+    "totalApplications": 8
+}
+```
 ---
 
 ## Validation & Exception Handling
