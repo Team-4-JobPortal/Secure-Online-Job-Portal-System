@@ -89,98 +89,109 @@ Job (1) → (*) Application
 ### 1. Register Candidate
 
 ```json
-POST http://localhost:8080/auth/register
+POST http://localhost:8080/Secure-Online-Job-Portal-System/auth/register
 Content-Type: application/json
 
 {
-    "firstName": "John",
-    "lastName": "Doe",
-    "email": "john.doe@example.com",
-    "phoneNumber": "9876543210",
-    "password": "Password@123",
-    "role": "candidate"
+  "role": "candidate",
+  "firstName": "John6",
+  "lastName": "Sena",
+  "phoneNumber": "00000000",
+  "email": "j7@example.com",
+  "password": "Password@456",
+  "candidateProfile": {
+    "currentLocation": "New York",
+    "skills": "Java, Spring MVC, Hibernate",
+    "experienceLevel": "JUNIOR"
+  }
 }
 ```
 
 ### 2. Register Employer
 
 ```json
-POST http://localhost:8080/auth/register
+POST http://localhost:8080/Secure-Online-Job-Portal-System/auth/register
 Content-Type: application/json
 
 {
-    "firstName": "Jane",
-    "lastName": "Smith",
-    "email": "jane.smith@company.com",
-    "phoneNumber": "9876543211",
-    "password": "Password@456",
-    "role": "employer"
+  "role": "employer",
+  "firstName": "Ajay",
+  "lastName": "Sharma",
+  "phoneNumber": "9876543210",
+  "email": "Ajay.sarma@example.com",
+  "password": "securePass456@",
+  "employerProfile": {
+    "companyName": "Tech Solutions Inc1.",
+    "companyDescription": "A leading provider of innovative tech solutions worldwide.",
+    "currentProfile": "Hiring for multiple Java developer positions."
+  }
 }
 ```
 
 ### 3. Login Candidate
 
 ```json
-POST http://localhost:8080/auth/login
+POST http://localhost:8080/Secure-Online-Job-Portal-System/auth/login
 Content-Type: application/json
 
 {
-    "email": "john.doe@example.com",
-    "password": "Password@123",
-    "role": "candidate"
+    "email":"abc@gmail.com",
+     "password":"Ashokp1201@",
+      "role":"candidate"
 }
 ```
 
 **Expected Response:**
 ```json
 {
+    "role": "candidate",
     "status": "success",
-    "token": "eyJhbGciOiJIUzI1NiJ9...",
-    "role": "candidate"
+    "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYmNAZ21haWwuY29tIiwiZXhwIjoxNzU1NzA2ODAzfQ.-BC1D0zFHRbVhFZnLJfUOvqSxHc7pcwSGB-2pXJ_5aI"
 }
 ```
 
 ### 4. Login Employer
 
 ```json
-POST http://localhost:8080/auth/login
+POST http://localhost:8080/Secure-Online-Job-Portal-System/auth/login
 Content-Type: application/json
 
 {
-    "email": "jane.smith@company.com",
-    "password": "Password@456",
-    "role": "employer"
+    "email":"Ajay.sarma@example.com",
+     "password":"securePass456@",
+      "role":"employer"
 }
 ```
 
 ### 5. Post Job (Employer)
 
 ```json
-POST http://localhost:8080/jobs/postJob
+POST http://localhost:8080/Secure-Online-Job-Portal-System/jobs/postJob
 Content-Type: application/json
 Authorization: Bearer {EMPLOYER_JWT_TOKEN}
 
 {
-    "title": "Senior Java Developer",
-    "description": "We are looking for an experienced Java developer with Spring Boot expertise. The candidate should have strong problem-solving skills and experience with microservices architecture.",
-    "location": "Bangalore",
-    "min_salary": 80000,
-    "max_salary": 120000,
-    "deadline": "2025-10-15"
+"title": "Embedded Engineer3",
+"description": "Develop and maintain Embedded.",
+"location": "Bangalore",
+"min_salary": 50000,
+"max_salary": 100000,
+"createdAt": "2025-08-13T14:30:00",
+"deadline": "2025-09-01T23:59:59+05:30"
 }
 ```
 
 ### 6. Get All Jobs
 
 ```json
-GET http://localhost:8080/jobs/list
+GET http://localhost:8080/Secure-Online-Job-Portal-System/jobs/list
 Content-Type: application/json
 ```
 
 ### 7. Search Jobs
 
 ```json
-GET http://localhost:8080/jobs/search?keyword=java&location=bangalore&minSalary=70000&maxSalary=150000
+GET http://localhost:8080/Secure-Online-Job-Portal-System/jobs/search?keyword=sde&location=mumbai&minSalary=1000&maxSalary=250000
 Content-Type: application/json
 ```
 
