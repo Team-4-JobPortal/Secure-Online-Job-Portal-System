@@ -198,7 +198,7 @@ Content-Type: application/json
 ### 8. Apply for Job (Candidate)
 
 ```json
-POST http://localhost:8080/jobs/1/apply
+POST http://localhost:8080/Secure-Online-Job-Portal-System/jobs/11/apply
 Content-Type: application/json
 Authorization: Bearer {CANDIDATE_JWT_TOKEN}
 
@@ -210,7 +210,7 @@ Authorization: Bearer {CANDIDATE_JWT_TOKEN}
 ### 9. Get Candidate Applications
 
 ```json
-GET http://localhost:8080/applications/my-applications
+GET http://localhost:8080/Secure-Online-Job-Portal-System/applications/my-applications
 Content-Type: application/json
 Authorization: Bearer {CANDIDATE_JWT_TOKEN}
 ```
@@ -218,7 +218,7 @@ Authorization: Bearer {CANDIDATE_JWT_TOKEN}
 ### 10. Get Candidate Stats
 
 ```json
-GET http://localhost:8080/applications/candidate/stats
+GET http://localhost:8080/Secure-Online-Job-Portal-System/applications/candidate/stats
 Content-Type: application/json
 Authorization: Bearer {CANDIDATE_JWT_TOKEN}
 ```
@@ -226,10 +226,10 @@ Authorization: Bearer {CANDIDATE_JWT_TOKEN}
 **Expected Response:**
 ```json
 {
-    "totalApplications": 5,
-    "pendingApplications": 2,
-    "shortlistedApplications": 1,
-    "rejectedApplications": 2
+    "pendingApplications": 1,
+    "rejectedApplications": 1,
+    "shortlistedApplications": 0,
+    "totalApplications": 2
 }
 ```
 
@@ -244,37 +244,37 @@ Authorization: Bearer {EMPLOYER_JWT_TOKEN}
 ### 12. Change Password
 
 ```json
-POST http://localhost:8080/auth/change-password
-Content-Type: application/json
+POST http://localhost:8080/Secure-Online-Job-Portal-System/auth/change-password
 
 {
-    "email": "john.doe@example.com",
-    "role": "candidate",
-    "oldPassword": "Password@123",
-    "newPassword": "NewPassword@789"
+  "email": "ajax1@gmail.com",
+  "role": "employer",
+  "oldPassword": "00000000",
+  "newPassword": "11111111"
 }
+
 ```
 
 ### 13. Update Profile
 
 ```json
-PUT http://localhost:8080/users/update
+PUT http://localhost:8080/Secure-Online-Job-Portal-System/users/update
 Content-Type: application/json
 Authorization: Bearer {JWT_TOKEN}
 
 {
-    "firstName": "John",
-    "lastName": "Doe",
+    "firstName": "Abhishek",
+    "lastName": "pandey",
     "phone": "9876543210",
     "location": "Mumbai",
     "skills": "Java, Spring Boot, Microservices, Docker, Kubernetes",
-    "experience": "5-10"
+    "experience": "0-1"
 }
 ```
 
 ### 14.Withdraw Application
 ```json
-DELETE http://localhost:8080/applications/52/withdraw
+DELETE http://localhost:8080/Secure-Online-Job-Portal-System/applications/12/withdraw
 Content-Type: application/json
 Authorization: Bearer {CANDIDATE_JWT_TOKEN}
 ```
