@@ -270,7 +270,7 @@ Authorization: Bearer {CANDIDATE_JWT_TOKEN}
 
 ---
 
-## Validation & Exception Handling (For Viva)
+## Validation & Exception Handling
 
 ### Bean Validation Annotations
 
