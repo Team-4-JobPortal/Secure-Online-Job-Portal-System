@@ -711,7 +711,7 @@ function loadApplications() {
                 const applicantName = `${app.user.firstName} ${app.user.lastName}`;
                 const jobTitle = app.job.title;
                 const applicationId = app.application_id;
-                const applicationDate = app.job.createdAt || 'N/A';
+                const applicationDate = app.applicationDate || 'N/A';
                 
                 const appCard = `
                     <div class="application-card">
