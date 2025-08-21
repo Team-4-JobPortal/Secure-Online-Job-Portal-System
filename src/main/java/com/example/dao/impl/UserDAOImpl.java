@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.dao.UserDAO;
 import com.example.entity.User;
+import com.example.exception.UserEmailExistException;
 import com.example.exception.UserEmailNotFoundException;
 
 @Repository
@@ -49,9 +50,23 @@ public class UserDAOImpl implements UserDAO {
                 .setParameter("role", role)
                 .getResultList();
     }
+    
+    // this method is not part the userDao
+    // It used to check for the duplicate email 
+    public boolean emailExists(String email) {
+        String hql = "SELECT 1 FROM User WHERE email = :email";
+        return getSession().createQuery(hql)
+                           .setParameter("email", email)
+                           .uniqueResult() != null;
+    }
+
 
     @Override
     public void save(User user) {
+    	
+    	if (emailExists(user.getEmail())) {
+            throw new UserEmailExistException("Email already exists.");
+    }	
     	
     	user.setPassword(passwordEncoder.encode(user.getPassword()));
         

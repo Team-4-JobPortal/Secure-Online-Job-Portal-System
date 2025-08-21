@@ -2,13 +2,9 @@ package com.example.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
-import javax.persistence.*;
 import java.sql.Date;
 import java.time.LocalDateTime;
 

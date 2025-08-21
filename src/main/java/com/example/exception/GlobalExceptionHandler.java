@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -23,6 +22,15 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(UserEmailNotFoundException.class)
     public ResponseEntity<Object> handleUserEmailNotFound(UserEmailNotFoundException ex){
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "error");
+        response.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+    
+    
+    @ExceptionHandler(UserEmailExistException.class)
+    public ResponseEntity<Object> ExistEmail(UserEmailExistException ex){
         Map<String, Object> response = new HashMap<>();
         response.put("status", "error");
         response.put("message", ex.getMessage());

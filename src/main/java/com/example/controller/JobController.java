@@ -117,6 +117,8 @@ public class JobController {
             @RequestParam(required = false) String minSalary,
             @RequestParam(required = false) String maxSalary) {
   			
+    			// fixing the  default value if the user send data 
+    			// input is string is emtpy then initailing with zero
     			int min = (minSalary.isEmpty())? 0:Integer.parseInt(minSalary);
     			int max= (maxSalary.isEmpty())? 0:Integer.parseInt(maxSalary);
     			  		
