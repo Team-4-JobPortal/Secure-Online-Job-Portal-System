@@ -294,6 +294,28 @@ Authorization: Bearer {EMPLOYER_JWT_TOKEN}
     "totalApplications": 8
 }
 ```
+### 16. Update Customer Information
+
+```json
+PUT http://localhost:8080/Secure-Online-Job-Portal-System/users/update
+Authorization: Bearer {CUSTOMER_JWT_TOKEN}
+
+{
+    "skills": "java",
+    "firstName": "Raunak2",
+    "lastName": "Singh",
+    "phone": "98928287487",
+    "location": "Mumbai",
+    "experience": "1-3",
+    "email": "rj@gmail.com"
+}
+```
+## 16. Get Customer Information
+
+```json
+GET http://localhost:8080/Secure-Online-Job-Portal-System/profile
+Authorization: Bearer {CUSTOMER_JWT_TOKEN}
+```
 ---
 
 ## Validation & Exception Handling
