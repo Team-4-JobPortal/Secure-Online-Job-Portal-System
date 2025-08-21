@@ -954,7 +954,7 @@ label[for] + input[required] ~ label::after {
                 displayJobs(jobs, $("#jobsResults"));
             },
             error: function() {
-                $("#jobsResults").html("<p>Error loading jobs. Please try again.</p>");
+                $("#jobsResults").html("<p>No Result</p>");
             }
         });
     }
