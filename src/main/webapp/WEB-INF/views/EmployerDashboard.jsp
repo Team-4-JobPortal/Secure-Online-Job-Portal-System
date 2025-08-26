@@ -395,6 +395,7 @@
 			<button class="nav-tab" onclick="showTab('post-job', event)">➕ Post Job</button>
 			<button class="nav-tab" onclick="showTab('my-jobs', event)">📝 My Jobs</button>
 			<button class="nav-tab" onclick="showTab('applications', event)">📋 Applications</button>
+			<button class="nav-tab" onclick="showTab('historys', event)">📋 Histroy</button>
 
         </div>
 
@@ -484,7 +485,19 @@
                 <p>Loading applications...</p>
             </div>
         </div>
+        
+        <!-- History Tab  -->
+     	<div id="historys" class="tab-content">
+            <h2 class="section-title">History</h2>
+            <div id="historylist">
+                <p>Loading Deleted jobs...</p>
+            </div>
+        </div>
+    
     </div>
+    
+    
+    
 
 
    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -521,6 +534,8 @@ function showTab(tabId, event) {
         loadApplications();
     } else if (tabId === 'overview') {
         loadDashboardData();
+    } else if(tabId == 'historys'){
+    		loadHistory();
     }
 }
 
@@ -734,6 +749,52 @@ function loadApplications() {
         }
     });
 }
+
+//History 
+function loadHistory() {
+    const jobsList = $("#historylist");
+    jobsList.html("<p>Loading jobs...</p>");
+
+    $.ajax({
+        url: "/Secure-Online-Job-Portal-System/jobs/history",
+        method: "GET",
+        headers: { "Authorization": "Bearer " + authToken },
+        success: function(jobs) {
+            jobsList.html("");
+            if (!jobs || jobs.length === 0) {
+                jobsList.html("<p>No jobs posted yet. </p>");
+                return;
+            }
+            jobs.forEach(job => {
+                const salaryRange = job.min_salary && job.max_salary
+                    ? `₹${job.min_salary} - ₹${job.max_salary}`
+                    : job.min_salary ? `From ₹${job.min_salary}`
+                    : job.max_salary ? `Up to ₹${job.max_salary}`
+                    : 'Salary negotiable';
+                        
+                const deadline = job.deadline ? new Date(job.deadline).toLocaleDateString() : "No deadline";
+                
+                const jobCard = `
+                    <div class="job-card">
+                        <div class="job-title">${escapeHtml(job.title)}</div>
+                        <div class="job-details">
+                            <div class="job-detail">📍 ${escapeHtml(job.location)}</div>
+                            <div class="job-detail">💰 ${salaryRange}</div>
+                            <div class="job-detail">⏰ Deadline: ${deadline}</div>
+                        </div>
+                        <p>${escapeHtml(job.description)}</p>
+                    </div>`;
+                jobsList.append(jobCard);
+            });
+        },
+        error: function() {
+            jobsList.html("<p>Error loading jobs. Please try again.</p>");
+        }
+    });
+}
+
+
+// hisyory end
 
 
 function escapeHtml(text) {

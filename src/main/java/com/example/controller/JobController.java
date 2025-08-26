@@ -2,11 +2,13 @@ package com.example.controller;
 
 import com.example.entity.Application;
 import com.example.entity.Job;
+import com.example.entity.JobHistory;
 import com.example.entity.User;
 import com.example.service.ApplicationService;
+import com.example.service.JobHistoryService;
 import com.example.service.JobService;
 import com.example.service.UserService;
-
+import com.example.service.impl.JobHistoryServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +24,23 @@ import javax.validation.Valid;
 @RequestMapping("/jobs")
 public class JobController {
 
+    private final JobHistoryServiceImpl jobHistoryServiceImpl;
+
     @Autowired
     private JobService jobService;
+    
+    @Autowired
+    private JobHistoryService jobHistoryService;
     
     @Autowired
     private UserService userService;
     
     @Autowired
     private ApplicationService applicationService;
+
+    JobController(JobHistoryServiceImpl jobHistoryServiceImpl) {
+        this.jobHistoryServiceImpl = jobHistoryServiceImpl;
+    }
 
  // Employer: Create Job
 //    @PostMapping("/postJob")
@@ -100,7 +111,13 @@ public class JobController {
     @DeleteMapping("/{id}")
     public String deleteJob(@PathVariable int id) {
         jobService.deleteJob(id);
+        
         return "Job deleted successfully!";
+    }
+    
+    @GetMapping("/history")
+    public List<JobHistory> getAllJobHistories(){
+    		return jobHistoryService.list();
     }
 
     // Candidate: View All Jobs
