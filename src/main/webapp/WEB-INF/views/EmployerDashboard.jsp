@@ -395,8 +395,7 @@
 			<button class="nav-tab" onclick="showTab('post-job', event)">➕ Post Job</button>
 			<button class="nav-tab" onclick="showTab('my-jobs', event)">📝 My Jobs</button>
 			<button class="nav-tab" onclick="showTab('applications', event)">📋 Applications</button>
-			<button class="nav-tab" onclick="showTab('historys', event)">📋 Histroy</button>
-
+			<button class="nav-tab" onclick="showTab('history', event)">📋 History</button>
         </div>
 
         <!-- Overview Tab -->
@@ -487,7 +486,7 @@
         </div>
         
         <!-- History Tab  -->
-     	<div id="historys" class="tab-content">
+     	<div id="history" class="tab-content">
             <h2 class="section-title">History</h2>
             <div id="historylist">
                 <p>Loading Deleted jobs...</p>
@@ -534,7 +533,7 @@ function showTab(tabId, event) {
         loadApplications();
     } else if (tabId === 'overview') {
         loadDashboardData();
-    } else if(tabId == 'historys'){
+    } else if(tabId == 'history'){
     		loadHistory();
     }
 }

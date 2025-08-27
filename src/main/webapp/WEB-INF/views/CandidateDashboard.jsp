@@ -727,8 +727,9 @@ label[for] + input[required] ~ label::after {
 
             <div class="form-group">
     <label for="coverLetter">Cover Letter *</label>
-    <textarea id="coverLetter" name="coverLetter" class="form-control" required
-              placeholder="Write a compelling cover letter explaining why you're the perfect fit for this role..."></textarea>
+    <textarea id="coverLetter" name="coverLetter" class="form-control" maxlength="500"
+              placeholder="Write a compelling cover letter explaining why you're the perfect fit for this role...">
+    </textarea>
 </div>
 
 
@@ -1120,7 +1121,7 @@ label[for] + input[required] ~ label::after {
     function submitApplication() {
         const submitBtn = $("#submitApplicationBtn");
         const submitText = $("#submitApplicationText");
-
+		
         submitBtn.prop("disabled", true);
         submitText.html('<span class="loading"></span>Submitting...');
 

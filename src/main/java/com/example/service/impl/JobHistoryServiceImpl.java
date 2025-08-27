@@ -18,8 +18,6 @@ public class JobHistoryServiceImpl implements JobHistoryService {
     		jobHistroyDao.save(job);
 	}
 
-	
-
 	@Override
 	public List<JobHistory> list() {
 		return jobHistroyDao.list();

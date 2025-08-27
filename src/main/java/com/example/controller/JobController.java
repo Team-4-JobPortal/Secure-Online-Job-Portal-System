@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.dto.ApplicationDto;
 import com.example.entity.Application;
 import com.example.entity.Job;
 import com.example.entity.JobHistory;
@@ -157,56 +158,13 @@ public class JobController {
     @PostMapping("/{jobId}/apply")
     public ResponseEntity<?> applyForJob(
             @PathVariable int jobId,
-            @RequestBody Application request,
+            @Valid @RequestBody ApplicationDto request,
             Authentication authentication) {
-
-        String email = authentication.getName();
-        User dbUser = userService.findByemail(email);
-
-        if (dbUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("User not found!");
-        }
-
-        // Only candidates can apply
-        if (!"candidate".equalsIgnoreCase(dbUser.getRole())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("Only Candidates can apply for jobs!");
-        }
-
-        Job job = jobService.getJobById(jobId);
-        if (job == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Job not found!");
-        }
-
-        // CHECK IF USER HAS ALREADY APPLIED TO THIS JOB
-        boolean hasAlreadyApplied = applicationService.hasUserAppliedToJob(dbUser.getUser_id(), jobId);
-        if (hasAlreadyApplied) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("You have already applied to this job!");
-        }
-
-        // Validate cover letter
-        if (request.getCoverLetter() == null || request.getCoverLetter().trim().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Cover letter is required!");
-        }
-
-        Application application = new Application();
-        application.setJob(job);
-        application.setUser(dbUser);
-        application.setCoverLetter(request.getCoverLetter().trim());
-        application.setStatus("Pending"); // default status
-
-        try {
-            applicationService.saveApp(application);
-            System.out.println("Application saved successfully for Job ID: " + jobId + ", User ID: " + dbUser.getUser_id());
-            return ResponseEntity.ok("Application submitted successfully with status Pending!");
-        } catch (Exception e) {
-            System.err.println("Error saving application: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to submit application. Please try again.");
+    	try {
+            Application application = applicationService.saveApp(jobId, request, authentication);
+            return ResponseEntity.ok("Application submitted successfully with status " + application.getStatus());
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

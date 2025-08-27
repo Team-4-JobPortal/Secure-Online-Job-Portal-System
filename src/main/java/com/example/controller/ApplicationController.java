@@ -39,11 +39,11 @@ public class ApplicationController {
     	return appService.findAppById(id);
     }
  
-    @PostMapping("/apply")
-    public void saveApp(@RequestBody Application app) {
-    	
-    	appService.saveApp(app);
-    }
+	/*
+	 * @PostMapping("/apply") public void saveApp(@RequestBody Application app) {
+	 * 
+	 * appService.saveApp(app); }
+	 */
     
     
     @PutMapping("/{id}")
