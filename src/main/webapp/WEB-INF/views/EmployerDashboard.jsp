@@ -352,6 +352,110 @@
             animation: spin 1s linear infinite;
             margin-right: 10px;
         }
+        
+        /* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.modal-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+.close {
+    font-size: 32px;
+    font-weight: bold;
+    color: #999;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    line-height: 1;
+}
+
+.close:hover {
+    color: #333;
+    transform: scale(1.1);
+}
+
+.cover-letter-content {
+    background: #f8f9ff;
+    border: 2px solid #e1e5e9;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 15px 0;
+    line-height: 1.6;
+    font-size: 16px;
+    color: #444;
+    min-height: 150px;
+    white-space: pre-wrap;
+}
+
+.applicant-info {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.applicant-info h3 {
+    margin: 0 0 5px 0;
+    font-size: 20px;
+}
+
+.applicant-info p {
+    margin: 0;
+    opacity: 0.9;
+}
+
+.btn-view {
+    background: #17a2b8;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-view:hover {
+    background: #138496;
+    transform: translateY(-1px);
+}
+        
 
         @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -494,6 +598,27 @@
         </div>
     
     </div>
+    
+    
+    <!-- Cover Letter Modal -->
+<div id="coverLetterModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Cover Letter</h2>
+            <span class="close" onclick="closeCoverLetterModal()">&times;</span>
+        </div>
+        
+        <div class="applicant-info">
+            <h3 id="modalApplicantName">Applicant Name</h3>
+            <p id="modalJobTitle">Job Title</p>
+            <p id="modalApplicationDate">Application Date</p>
+        </div>
+        
+        <div class="cover-letter-content" id="modalCoverLetter">
+            Loading cover letter...
+        </div>
+    </div>
+</div>
     
     
     
@@ -726,6 +851,7 @@ function loadApplications() {
                 const jobTitle = app.job.title;
                 const applicationId = app.application_id;
                 const applicationDate = app.applicationDate || 'N/A';
+                const coverLetter = app.coverLetter || 'No cover letter provided';
                 
                 const appCard = `
                     <div class="application-card">
@@ -734,10 +860,11 @@ function loadApplications() {
                         <p><strong>Applied:</strong> ${formatApplicationDate(applicationDate)}</p>
                         <p><strong>Status:</strong> <span class="application-status status-${app.status.toLowerCase()}">${app.status}</span></p>
                         <div class="job-actions">
+                            <button class="btn btn-view btn-small" onclick="viewCoverLetter('${escapeHtml(applicantName)}', '${escapeHtml(jobTitle)}', '${formatApplicationDate(applicationDate)}', \`${escapeHtml(coverLetter)}\`)">View Cover Letter</button>
                         ${app.status.toLowerCase() === 'pending' ? `
-                        	    <button class="btn btn-success btn-small" onclick="updateApplicationStatus(${applicationId}, 'accepted')">Accept</button>
-                        	    <button class="btn btn-danger btn-small" onclick="updateApplicationStatus(${applicationId}, 'rejected')">Reject</button>
-                        	` : ''}
+                            <button class="btn btn-success btn-small" onclick="updateApplicationStatus(${applicationId}, 'accepted')">Accept</button>
+                            <button class="btn btn-danger btn-small" onclick="updateApplicationStatus(${applicationId}, 'rejected')">Reject</button>
+                        ` : ''}
                         </div>
                     </div>`;
                 applicationsList.append(appCard);
@@ -748,6 +875,7 @@ function loadApplications() {
         }
     });
 }
+
 
 //History 
 function loadHistory() {
@@ -862,6 +990,46 @@ function updateApplicationStatus(applicationId, status) {
         }
     });
 }
+
+//Cover Letter Modal Functions
+function viewCoverLetter(applicantName, jobTitle, applicationDate, coverLetter) {
+    $("#modalApplicantName").text(applicantName);
+    $("#modalJobTitle").text(`Applied for: ${jobTitle}`);
+    $("#modalApplicationDate").text(`Applied on: ${applicationDate}`);
+    $("#modalCoverLetter").text(coverLetter || 'No cover letter provided');
+    
+    $("#coverLetterModal").show();
+    
+    // Prevent body scroll when modal is open
+    $("body").css("overflow", "hidden");
+}
+
+function closeCoverLetterModal() {
+    $("#coverLetterModal").hide();
+    
+    // Restore body scroll
+    $("body").css("overflow", "auto");
+}
+
+// Close modal when clicking outside of it
+$(document).ready(function() {
+    // ... existing code ...
+    
+    // Add this click handler for the modal
+    $(window).click(function(event) {
+        if (event.target.id === 'coverLetterModal') {
+            closeCoverLetterModal();
+        }
+    });
+    
+    // Close modal with Escape key
+    $(document).keydown(function(event) {
+        if (event.key === "Escape") {
+            closeCoverLetterModal();
+        }
+    });
+});
+
 
 function logout() {
     if (confirm('Are you sure you want to logout?')) {

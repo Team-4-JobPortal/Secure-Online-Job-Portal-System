@@ -43,7 +43,18 @@ public class Job {
     @Column(name = "application_deadline")
     private Date deadline;
 
-    @ManyToOne
+    @Column(name = "is_deleted")
+    private boolean isDeleted = false;
+    
+    public boolean isDeleted() {
+		return isDeleted;
+	}
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
+	@ManyToOne
     @JoinColumn(name = "employer_id")
     private User user;
 

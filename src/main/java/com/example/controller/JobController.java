@@ -3,13 +3,12 @@ package com.example.controller;
 import com.example.dto.ApplicationDto;
 import com.example.entity.Application;
 import com.example.entity.Job;
-import com.example.entity.JobHistory;
 import com.example.entity.User;
 import com.example.service.ApplicationService;
-import com.example.service.JobHistoryService;
+
 import com.example.service.JobService;
 import com.example.service.UserService;
-import com.example.service.impl.JobHistoryServiceImpl;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +24,10 @@ import javax.validation.Valid;
 @RequestMapping("/jobs")
 public class JobController {
 
-	private final JobHistoryServiceImpl jobHistoryServiceImpl;
-
 	@Autowired
 	private JobService jobService;
 
-	@Autowired
-	private JobHistoryService jobHistoryService;
+	
 
 	@Autowired
 	private UserService userService;
@@ -39,11 +35,7 @@ public class JobController {
 	@Autowired
 	private ApplicationService applicationService;
 
-	
-	JobController(JobHistoryServiceImpl jobHistoryServiceImpl) {
-		
-	this.jobHistoryServiceImpl = jobHistoryServiceImpl; 
-	}
+
 	 
 
 	// Employer: Post Job
@@ -69,24 +61,48 @@ public class JobController {
 		return ResponseEntity.ok("Job posted successfully");
 	}
 
-	// Employer: Delete Job
-	@DeleteMapping("/{id}")
-	public String deleteJob(@PathVariable int id) {
-		jobService.deleteJob(id);
+	 // Employer: Soft Delete Job
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteJob(@PathVariable int id, Authentication authentication) {
+        try {
+            String email = authentication.getName();
+            User currentUser = userService.findByemail(email);
+            
+            if (currentUser == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found!");
+            }
 
-		return "Job deleted successfully!";
-	}
+            if (!"employer".equalsIgnoreCase(currentUser.getRole())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only employers can delete jobs!");
+            }
 
-	@GetMapping("/history")
-	public List<JobHistory> getAllJobHistories() {
-		return jobHistoryService.list();
-	}
+            // Verify job ownership before deletion
+            Job job = jobService.getJobById(id);
+            if (job == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Job not found!");
+            }
 
-	// Candidate: View All Jobs
-	@GetMapping("/list")
-	public List<Job> getAllJobs() {
-		return jobService.getAllJobs();
-	}
+            if (job.getUser().getUser_id() != currentUser.getUser_id()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can only delete your own jobs!");
+            }
+
+            jobService.deleteJob(id); // This will soft delete
+            return ResponseEntity.ok("Job deleted successfully!");
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error deleting job: " + e.getMessage());
+        }
+    }
+
+	
+
+ // Candidate: View All Jobs
+    @GetMapping("/list")
+    public List<Job> getAllJobs() {
+        return jobService.getAllJobs(); 
+        // Only returns non-deleted jobs
+    }
 
 	// Candidate: Search Jobs
 	@GetMapping("/search")
@@ -103,26 +119,66 @@ public class JobController {
 	}
 
 	// Common: Get Job by ID
-	@GetMapping("/{id}")
-	public Job getJobById(@PathVariable int id) {
-		return jobService.getJobById(id);
-	}
+	 @GetMapping("/{id}")
+	    public ResponseEntity<?> getJobById(@PathVariable int id) {
+	        Job job = jobService.getJobById(id);
+	        if (job == null || job.isDeleted()) {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Job not found!");
+	        }
+	        return ResponseEntity.ok(job);
+	    }
+	 
+	 
+	 
 	// list all Employer job posts
 	@GetMapping("/currentLoginEmployerJobPosted/list")
 	public List<Job> getMyJobs(Authentication authentication) {
 		String email = authentication.getName(); // logged-in employer’s email
 		return jobService.getJobsByEmployer(email);
 	}
-	// candidate job apply
-	@PostMapping("/{jobId}/apply")
-	public ResponseEntity<?> applyForJob(@PathVariable int jobId, @Valid @RequestBody ApplicationDto request,
-			Authentication authentication) {
-		try {
-			Application application = applicationService.saveApp(jobId, request, authentication);
-			return ResponseEntity.ok("Application submitted successfully with status " + application.getStatus());
-		} catch (RuntimeException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
-	}
+	
+	// Get deleted jobs (history) for employer
+    @GetMapping("/history")
+    public ResponseEntity<?> getDeletedJobs(Authentication authentication) {
+        try {
+            String email = authentication.getName();
+            User currentUser = userService.findByemail(email);
+            
+            if (currentUser == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found!");
+            }
+
+            if (!"employer".equalsIgnoreCase(currentUser.getRole())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only employers can view job history!");
+            }
+
+            // Get deleted jobs for this employer
+            List<Job> deletedJobs = jobService.getDeletedJobsByEmployer(currentUser.getUser_id());
+            return ResponseEntity.ok(deletedJobs);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error fetching job history: " + e.getMessage());
+        }
+    }
+    
+
+ // Candidate: Apply for job
+    @PostMapping("/{jobId}/apply")
+    public ResponseEntity<?> applyForJob(@PathVariable int jobId, @Valid @RequestBody ApplicationDto request,
+            Authentication authentication) {
+        try {
+            // Check if job exists and is not deleted
+            Job job = jobService.getJobById(jobId);
+            if (job == null || job.isDeleted()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Job not found or no longer available!");
+            }
+
+            Application application = applicationService.saveApp(jobId, request, authentication);
+            return ResponseEntity.ok("Application submitted successfully with status " + application.getStatus());
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
 }

@@ -60,7 +60,7 @@
         <property name="driverClassName" value="org.postgresql.Driver" />
         <property name="url" value="jdbc:postgresql://localhost:5432/jobPortal" />
         <property name="username" value="postgres" />
-        <property name="password" value="root" />
+        <property name="password" value="Ashokp1201@" />
     </bean>
 
     <!-- Hibernate SessionFactory -->
@@ -75,6 +75,11 @@
             </props>
         </property>
     </bean>
+    
+    <!-- HibernateUtil bean -->
+	<bean id="hibernateUtil" class="com.example.helper.HibernateUtil">
+	    <constructor-arg ref="sessionFactory"/>
+	</bean>
 
     <!-- JSP View Resolver -->
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">

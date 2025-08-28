@@ -21,4 +21,6 @@ public interface JobService {
 
     List<Job> searchJobs(String keyword, String location, Integer minSalary, Integer maxSalary) throws JobNotFoundException;
 	List<Job> findJobsByEmployer(int user_id);
+
+	List<Job> getDeletedJobsByEmployer(int user_id);
 }

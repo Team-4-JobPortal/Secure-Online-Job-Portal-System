@@ -2,9 +2,7 @@ package com.example.service.impl;
 
 import com.example.dao.JobDao;
 import com.example.entity.Job;
-import com.example.entity.JobHistory;
 import com.example.exception.JobNotFoundException;
-import com.example.service.JobHistoryService;
 import com.example.service.JobService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,8 +14,7 @@ public class JobServiceImpl implements JobService {
 	@Autowired
 	private JobDao jobDao;
 	
-	 @Autowired
-	 private JobHistoryService jobHistoryService;
+	
 
 	@Override
 	public void createJob(Job job) {
@@ -42,19 +39,6 @@ public class JobServiceImpl implements JobService {
 	@Override
 	public void deleteJob(int id) {
 		// backup the job class data into jobhistory
-		Job existJob = jobDao.get(id);
-		JobHistory backup = new JobHistory();
-		
-		backup.setTitle(existJob.getTitle());
-		backup.setDeadline(existJob.getDeadline());
-		backup.setCreatedAt(existJob.getCreatedAt());
-		backup.setDescription(existJob.getDescription());
-		backup.setLocation(existJob.getLocation());
-		backup.setMax_salary(existJob.getMax_salary());
-		backup.setMin_salary(existJob.getMin_salary());
-		
-		jobHistoryService.save(backup);
-		System.out.println("<----------------------- backup is done ------------------ >");
 		
 		jobDao.delete(id);
 	}
@@ -80,5 +64,11 @@ public class JobServiceImpl implements JobService {
 		// TODO Auto-generated method stub
 		return jobDao.findByEmployerUserid(user_id);
 	}
+	
+	@Override
+	public List<Job> getDeletedJobsByEmployer(int employerId) {
+	    return jobDao.findDeletedJobsByEmployerUserid(employerId);
+	}
+
 
 }

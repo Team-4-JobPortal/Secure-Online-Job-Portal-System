@@ -550,6 +550,22 @@ label[for] + input[required] ~ label::after {
                 align-items: stretch;
             }
         }
+        
+        .email-display-box {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid #dee2e6;
+    color: #495057;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.email-display-box::before {
+    content: "📧";
+    font-size: 16px;
+}
+        
     </style>
 </head>
 <body>
@@ -655,26 +671,30 @@ label[for] + input[required] ~ label::after {
 
         <form id="profileForm">
             <div class="filter-row">
-                <div class="filter-group">
-                    <label for="profileFirstName">First Name *</label>
-                    <input type="text" id="profileFirstName" name="firstName" class="form-control" required>
-                </div>
-                <div class="filter-group">
-                    <label for="profileLastName">Last Name *</label>
-                    <input type="text" id="profileLastName" name="lastName" class="form-control" required>
-                </div>
-            </div>
+    <div class="filter-group">
+        <label for="profileFirstName">First Name *</label>
+        <input type="text" id="profileFirstName" name="firstName" class="form-control" required>
+    </div>
+    <div class="filter-group">
+        <label for="profileLastName">Last Name *</label>
+        <input type="text" id="profileLastName" name="lastName" class="form-control" required>
+    </div>
+</div>
 
-            <div class="filter-row">
-                <div class="filter-group">
-                    <label for="profileEmail">Email *</label>
-                    <input type="email" id="profileEmail" name="email" class="form-control" required readonly>
-                </div>
-                <div class="filter-group">
-                    <label for="profilePhone">Phone</label>
-                    <input type="tel" id="profilePhone" name="phone" class="form-control">
-                </div>
-            </div>
+<div class="filter-row">
+    <div class="filter-group">
+        <label>Email Address</label>
+        <div class="form-control" style="background-color: #f8f9fa; border: 2px solid #e9ecef; color: #6c757d; cursor: not-allowed;">
+            <span id="profileEmailDisplay">Loading...</span>
+        </div>
+        <small style="color: #6c757d; font-size: 12px;">Email cannot be changed</small>
+    </div>
+    <div class="filter-group">
+        <label for="profilePhone">Phone</label>
+        <input type="tel" id="profilePhone" name="phone" class="form-control">
+    </div>
+</div>
+            
 
             <div class="form-group">
                 <label for="profileLocation">Current Location</label>
@@ -1276,26 +1296,28 @@ function loadMyApplications() {
     }
 
     // Load profile
-    function loadProfile() {
-        $.ajax({
-            url: "/Secure-Online-Job-Portal-System/profile",
-            method: "GET",
-            headers: { "Authorization": "Bearer " + authToken },
-            success: function(profile) {
-                $("#candidateName").text((profile.firstName || '') + " " + (profile.lastName || ''));
-                $("#profileFirstName").val(profile.firstName || '');
-                $("#profileLastName").val(profile.lastName || '');
-                $("#profileEmail").val(profile.email || '');
-                $("#profilePhone").val(profile.phone || '');
-                $("#profileLocation").val(profile.location || '');
-                $("#profileSkills").val(profile.skills || '');
-                $("#profileExperience").val(profile.experience || '0-1');
-            },
-            error: function() {
-                console.log("Error loading profile");
-            }
-        });
-    }
+function loadProfile() {
+    $.ajax({
+        url: "/Secure-Online-Job-Portal-System/profile",
+        method: "GET",
+        headers: { "Authorization": "Bearer " + authToken },
+        success: function(profile) {
+            $("#candidateName").text((profile.firstName || '') + " " + (profile.lastName || ''));
+            $("#profileFirstName").val(profile.firstName || '');
+            $("#profileLastName").val(profile.lastName || '');
+            $("#profileEmailDisplay").text(profile.email || 'No email provided'); // Changed this line
+            $("#profilePhone").val(profile.phone || '');
+            $("#profileLocation").val(profile.location || '');
+            $("#profileSkills").val(profile.skills || '');
+            $("#profileExperience").val(profile.experience || '0-1');
+        },
+        error: function() {
+            console.log("Error loading profile");
+            $("#profileEmailDisplay").text('Error loading email');
+        }
+    });
+}
+
 
     // Update profile
     function updateProfile() {
