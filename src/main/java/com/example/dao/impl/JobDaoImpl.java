@@ -4,7 +4,6 @@ import com.example.dao.JobDao;
 import com.example.entity.Job;
 import com.example.helper.HibernateUtil;
 
-import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;

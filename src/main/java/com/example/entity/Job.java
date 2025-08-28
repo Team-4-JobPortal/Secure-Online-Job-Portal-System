@@ -1,9 +1,6 @@
 package com.example.entity;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
@@ -17,15 +14,11 @@ public class Job {
     @Column(name = "job_id")
     private int job_id;
 
-    @NotBlank(message = "title is required")
-	@Size(min=3,max=150,message="Title must be atleast 3 characters") 
+
     private String title;
 
-    @NotBlank(message="Description is required")
-	@Size(max=1000,message="Description can't be greater than 1000 characters")
     private String description;
 
-    @NotBlank(message="location is required")
     private String location;
 
    
@@ -39,7 +32,8 @@ public class Job {
     
     @Column(name = "posting_date")
     private LocalDateTime createdAt;
-    @NotNull
+
+    
     @Column(name = "application_deadline")
     private Date deadline;
 

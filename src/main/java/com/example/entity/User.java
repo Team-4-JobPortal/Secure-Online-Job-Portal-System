@@ -5,9 +5,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 
 @Entity
 @JsonInclude(Include.NON_NULL) // hide null fields in JSON
@@ -20,25 +17,20 @@ public class User {
 
     private String role;
     
-    @NotBlank(message="First name is required")
+    
     private String firstName;
     
-    @NotBlank(message="last name is required")
+
     private String lastName;
     
-    @NotBlank(message="phoneNumber is required")
+   
     private String phoneNumber;
     
-    @NotBlank(message="Email is required")
+
     @Column(unique = true, nullable = false)
-    @Email(message = "provide a valid email address")
     private String email;
     
-    @NotBlank(message="password is required") 
-    @Pattern(
-    	    regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!?.]).{8,}$",
-    	    message = "Min 8 characters, must contain uppercase, lowercase, number, and special character"
-    	)
+  
     private String password;
     
   

@@ -12,11 +12,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
     
-	@ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> handleRuntime(RuntimeException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
-    }
-	
     @ExceptionHandler(JobNotFoundException.class)
     public ResponseEntity<Object> handleJobNotFound(JobNotFoundException ex){
         Map<String, Object> response = new HashMap<>();
@@ -52,6 +47,5 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
     
-    // Remove or comment out generic Exception.class handler
-    // @ExceptionHandler(Exception.class) - DON'T USE THIS
+   
 }

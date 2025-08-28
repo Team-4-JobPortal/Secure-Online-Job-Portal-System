@@ -1101,6 +1101,8 @@ label[for] + input[required] ~ label::after {
                         <div class="job-detail">💰 ${salaryRange}</div>
                         <div class="job-detail">⏰ ${deadline}</div>
                     </div>
+                    <div class="job-description">${escapeHtml(job.description)}</div>
+                    <div class="job-actions">
                     <div class="job-actions">
                     ${isApplied
                         ? '<button class="btn btn-disabled btn-small" disabled>Already Applied</button>'
@@ -1319,42 +1321,57 @@ function loadProfile() {
 }
 
 
-    // Update profile
-    function updateProfile() {
-        const updateBtn = $("#updateProfileBtn");
-        const updateText = $("#updateProfileText");
+//Update profile function - MODIFIED TO WORK WITH YOUR CURRENT DTO
+function updateProfile() {
+    const updateBtn = $("#updateProfileBtn");
+    const updateText = $("#updateProfileText");
 
-        updateBtn.prop("disabled", true);
-        updateText.html('<span class="loading"></span>Updating...');
+    updateBtn.prop("disabled", true);
+    updateText.html('<span class="loading"></span>Updating...');
 
-        const profileData = {
-            firstName: $("#profileFirstName").val().trim(),
-            lastName: $("#profileLastName").val().trim(),
-            phone: $("#profilePhone").val().trim(),
-            location: $("#profileLocation").val().trim(),
+    // Map UI experience values to enum values
+    const expUi = $("#profileExperience").val(); // "0-1", "1-3", "3-5", "5-10", "10+"
+    const experienceMap = {
+        "0-1": "JUNIOR",
+        "1-3": "JUNIOR", 
+        "3-5": "JUNIOR",
+        "5-10": "SENIOR",
+        "10+": "LEAD"
+    };
+    const experienceEnum = experienceMap[expUi] || "JUNIOR";
+
+    // Structure payload to match your UpdateCandidateDto structure
+    const profileData = {
+        firstName: $("#profileFirstName").val().trim(),
+        lastName: $("#profileLastName").val().trim(),
+        phoneNumber: $("#profilePhone").val().trim(),  // ✅ Changed from 'phone' to 'phoneNumber'
+        candidateProfile: {                            // ✅ Nested structure as DTO expects
+            currentLocation: $("#profileLocation").val().trim(),
             skills: $("#profileSkills").val().trim(),
-            experience: $("#profileExperience").val()
-        };
+            experienceLevel: experienceEnum            // ✅ Enum value: JUNIOR/SENIOR/LEAD
+        }
+    };
 
-        $.ajax({
-            url: "/Secure-Online-Job-Portal-System/users/update",
-            method: "PUT",
-            contentType: "application/json",
-            headers: { "Authorization": "Bearer " + authToken },
-            data: JSON.stringify(profileData),
-            success: function() {
-                showAlert('✅ Profile updated successfully!', 'success', 'profileAlertContainer');
-                $("#candidateName").text(profileData.firstName + " " + profileData.lastName);
-            },
-            error: function(xhr) {
-                showAlert('❌ ' + (xhr.responseText || 'Failed to update profile'), 'error', 'profileAlertContainer');
-            },
-            complete: function() {
-                updateBtn.prop("disabled", false);
-                updateText.html('Update Profile');
-            }
-        });
-    }
+    $.ajax({
+        url: "/Secure-Online-Job-Portal-System/users/update",
+        method: "PUT",
+        contentType: "application/json",
+        headers: { "Authorization": "Bearer " + authToken },
+        data: JSON.stringify(profileData),
+        success: function() {
+            showAlert('✅ Profile updated successfully!', 'success', 'profileAlertContainer');
+            $("#candidateName").text(profileData.firstName + " " + profileData.lastName);
+        },
+        error: function(xhr) {
+            showAlert('❌ ' + (xhr.responseText || 'Failed to update profile'), 'error', 'profileAlertContainer');
+        },
+        complete: function() {
+            updateBtn.prop("disabled", false);
+            updateText.html('Update Profile');
+        }
+    });
+}
+
 
     // Utility functions
     function showAlert(message, type, containerId) {

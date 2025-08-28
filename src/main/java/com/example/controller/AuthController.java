@@ -1,131 +1,44 @@
 package com.example.controller;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.dto.LoginRequest;
+import com.example.dto.UserDto;
 import com.example.entity.User;
-import com.example.security.JwtUtil;
 import com.example.service.UserService;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
-	private final  JwtUtil jwtUtil = new JwtUtil();
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    
     @Autowired
     private UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest user) {
-        String email = user.getEmail();
-        String password = user.getPassword();
-        String role = user.getRole();
-        
-        // 1. Authenticate the user by email and password
-        try {
-            authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(email, password)
-            );
-        } catch (BadCredentialsException ex) {
-        	System.out.println("{\"message\": \"Invalid email or password!\"}");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                                 .body(Collections.singletonMap("message", "Invalid email or password"));
-        }
-        // 2. Fetch user from DB
-        User dbUser = userService.findByemail(email);
-        if (dbUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                                 .body(Collections.singletonMap("message", "User not found"));
-        }
-
-        // 3. Compare roles, assuming dbUser.getRole() returns "employer" or "candidate"
-        if (!dbUser.getRole().equalsIgnoreCase(role)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                                 .body(Collections.singletonMap("message", "Role does not match for this account"));
-        }
-
-        // 4. Generate JWT token
-        String token = jwtUtil.generateToken(dbUser.getEmail()); // or username if different
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", "success");
-        response.put("token", token);
-        response.put("role", dbUser.getRole());
-
-        return ResponseEntity.ok(response);
+        // Delegate all logic to service layer
+        return userService.loginUser(user);
     }
-    
-    
     
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestBody User req) {
-        User dbUser = userService.findByemail(req.getEmail());
-        if (dbUser == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Collections.singletonMap("message", "Account not found with this email and role."));
-        }
-
-        // Role check
-        if (!dbUser.getRole().equalsIgnoreCase(req.getRole())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Collections.singletonMap("message", "Role does not match for this account."));
-        }
-
-        // Verify old password
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(req.getEmail(), req.getOldPassword())
-            );
-        } catch (BadCredentialsException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Collections.singletonMap("message", "Current password is incorrect."));
-        }
-
-        // Update password
-        userService.updatePassword(dbUser, req.getNewPassword());
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", "success");
-        response.put("message", "Password changed successfully");
-        return ResponseEntity.ok(response);
+        // Delegate all logic to service layer
+        return userService.changeUserPassword(req);
     }
-
-    
-    
 
     @GetMapping("/user/me")
-    public ResponseEntity<Map<String, String>> getCurrentUser(Authentication authentication) {
-        User user = userService.findByemail(authentication.getName());
-
-        Map<String, String> response = new HashMap<>();
-        response.put("email", user.getEmail());
-        response.put("firstName", user.getFirstName());
-        response.put("lastName", user.getLastName());
-
-        return ResponseEntity.ok(response);
+    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
+        // Delegate all logic to service layer
+        return userService.getCurrentUserInfo(authentication);
     }
     
- // register
     @PostMapping("/register")
-    public void addUser(@Valid @RequestBody User user) {
-        userService.saveUser(user);
+    public ResponseEntity<?> register(@Valid @RequestBody UserDto userDto) {
+        return userService.registerUser(userDto);
     }
-
-
-    
 }
- 
