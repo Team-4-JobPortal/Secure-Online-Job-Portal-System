@@ -25,147 +25,104 @@ import javax.validation.Valid;
 @RequestMapping("/jobs")
 public class JobController {
 
-    private final JobHistoryServiceImpl jobHistoryServiceImpl;
+	private final JobHistoryServiceImpl jobHistoryServiceImpl;
 
-    @Autowired
-    private JobService jobService;
-    
-    @Autowired
-    private JobHistoryService jobHistoryService;
-    
-    @Autowired
-    private UserService userService;
-    
-    @Autowired
-    private ApplicationService applicationService;
+	@Autowired
+	private JobService jobService;
 
-    JobController(JobHistoryServiceImpl jobHistoryServiceImpl) {
-        this.jobHistoryServiceImpl = jobHistoryServiceImpl;
-    }
+	@Autowired
+	private JobHistoryService jobHistoryService;
 
- // Employer: Create Job
-//    @PostMapping("/postJob")
-//    public ResponseEntity<?> createJob(@RequestBody Job job, Authentication authentication) {
-//        // Get logged-in username from JWT authentication
-//        String email = authentication.getName();
-//
-//        // Fetch user from DB
-//        User dbUser = userService.findByemail(email);
-//
-//        if (dbUser == null) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-//                    .body("User not found!");
-//        }
-//
-//        // Check role
-//        if (!"employer".equalsIgnoreCase(dbUser.getRole())) {
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-//                    .body("Only Employer can post jobs!");
-//        }
-//
-//        // Attach employer (user) to the job
-//        job.setUser(dbUser);
-//
-//        jobService.createJob(job);
-//
-//        return ResponseEntity.ok("Job created successfully!");
-//    }
+	@Autowired
+	private UserService userService;
 
-    
-    @PostMapping("/postJob")
-    @ResponseBody
-    public ResponseEntity<?> createJob(@Valid @RequestBody Job job,
-                                       Authentication authentication) {
-        String email = authentication.getName();
-        User dbUser = userService.findByemail(email);
-        if (dbUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("User not found!");
-        }
+	@Autowired
+	private ApplicationService applicationService;
 
-        // Check role
-        if (!"employer".equalsIgnoreCase(dbUser.getRole())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("Only Employer can post jobs!");
-        }
-        
-        job.setUser(dbUser);
-        job.setCreatedAt(LocalDateTime.now());
-        // save job
-        jobService.createJob(job);
-        System.out.println("Job posted successfully");
-        return ResponseEntity.ok("Job posted successfully");
-    }
-    // Employer: Update Job
-    @PutMapping("/{id}")
-    public String updateJob(@PathVariable int id, @RequestBody Job updatedJob) {
-        Job existingJob = jobService.getJobById(id);
-        if (existingJob == null) {
-            return "Job not found!";
-        }
-        updatedJob.setJob_id(id); // keep the same ID
-        jobService.updateJob(updatedJob);
-        return "Job updated successfully!";
-    }
+	
+	JobController(JobHistoryServiceImpl jobHistoryServiceImpl) {
+		
+	this.jobHistoryServiceImpl = jobHistoryServiceImpl; 
+	}
+	 
 
-    // Employer: Delete Job
-    @DeleteMapping("/{id}")
-    public String deleteJob(@PathVariable int id) {
-        jobService.deleteJob(id);
-        
-        return "Job deleted successfully!";
-    }
-    
-    @GetMapping("/history")
-    public List<JobHistory> getAllJobHistories(){
-    		return jobHistoryService.list();
-    }
+	// Employer: Post Job
+	@PostMapping("/postJob")
+	@ResponseBody
+	public ResponseEntity<?> createJob(@Valid @RequestBody Job job, Authentication authentication) {
+		String email = authentication.getName();
+		User dbUser = userService.findByemail(email);
+		if (dbUser == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found!");
+		}
 
-    // Candidate: View All Jobs
-    @GetMapping("/list")
-    public List<Job> getAllJobs() {
-        return jobService.getAllJobs();
-    }
+		// Check role
+		if (!"employer".equalsIgnoreCase(dbUser.getRole())) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only Employer can post jobs!");
+		}
 
- // Candidate: Search Jobs
-    @GetMapping("/search")
-    public List<Job> searchJobs(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String location,
-            @RequestParam(required = false) String minSalary,
-            @RequestParam(required = false) String maxSalary) {
-  			
-    			// fixing the  default value if the user send data 
-    			// input is string is emtpy then initailing with zero
-    			int min = (minSalary.isEmpty())? 0:Integer.parseInt(minSalary);
-    			int max= (maxSalary.isEmpty())? 0:Integer.parseInt(maxSalary);
-    			  		
-        return jobService.searchJobs(keyword, location, min, max);
-    }
+		job.setUser(dbUser);
+		job.setCreatedAt(LocalDateTime.now());
+		// save job
+		jobService.createJob(job);
+		System.out.println("Job posted successfully");
+		return ResponseEntity.ok("Job posted successfully");
+	}
 
-    // Common: Get Job by ID
-    @GetMapping("/{id}")
-    public Job getJobById(@PathVariable int id) {
-        return jobService.getJobById(id);
-    }
-    
-    @GetMapping("/currentLoginEmployerJobPosted/list")
-    public List<Job> getMyJobs(Authentication authentication) {
-        String email = authentication.getName(); // logged-in employer’s email
-        return jobService.getJobsByEmployer(email);
-    }
-    
-    @PostMapping("/{jobId}/apply")
-    public ResponseEntity<?> applyForJob(
-            @PathVariable int jobId,
-            @Valid @RequestBody ApplicationDto request,
-            Authentication authentication) {
-    	try {
-            Application application = applicationService.saveApp(jobId, request, authentication);
-            return ResponseEntity.ok("Application submitted successfully with status " + application.getStatus());
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+	// Employer: Delete Job
+	@DeleteMapping("/{id}")
+	public String deleteJob(@PathVariable int id) {
+		jobService.deleteJob(id);
+
+		return "Job deleted successfully!";
+	}
+
+	@GetMapping("/history")
+	public List<JobHistory> getAllJobHistories() {
+		return jobHistoryService.list();
+	}
+
+	// Candidate: View All Jobs
+	@GetMapping("/list")
+	public List<Job> getAllJobs() {
+		return jobService.getAllJobs();
+	}
+
+	// Candidate: Search Jobs
+	@GetMapping("/search")
+	public List<Job> searchJobs(@RequestParam(required = false) String keyword,
+			@RequestParam(required = false) String location, @RequestParam(required = false) String minSalary,
+			@RequestParam(required = false) String maxSalary) {
+
+		// fixing the default value if the user send data
+		// input is string is emtpy then initailing with zero
+		int min = (minSalary.isEmpty()) ? 0 : Integer.parseInt(minSalary);
+		int max = (maxSalary.isEmpty()) ? 0 : Integer.parseInt(maxSalary);
+
+		return jobService.searchJobs(keyword, location, min, max);
+	}
+
+	// Common: Get Job by ID
+	@GetMapping("/{id}")
+	public Job getJobById(@PathVariable int id) {
+		return jobService.getJobById(id);
+	}
+	// list all Employer job posts
+	@GetMapping("/currentLoginEmployerJobPosted/list")
+	public List<Job> getMyJobs(Authentication authentication) {
+		String email = authentication.getName(); // logged-in employer’s email
+		return jobService.getJobsByEmployer(email);
+	}
+	// candidate job apply
+	@PostMapping("/{jobId}/apply")
+	public ResponseEntity<?> applyForJob(@PathVariable int jobId, @Valid @RequestBody ApplicationDto request,
+			Authentication authentication) {
+		try {
+			Application application = applicationService.saveApp(jobId, request, authentication);
+			return ResponseEntity.ok("Application submitted successfully with status " + application.getStatus());
+		} catch (RuntimeException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
 
 }

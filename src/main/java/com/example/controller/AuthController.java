@@ -29,26 +29,6 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
-    
-
-    
-
-//    @PostMapping("/login")
-//    public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
-//        String email = body.get("email");
-//        String password = body.get("password");
-//        String role = body.get("role");
-//
-//        // 1. Authenticate the user by email and password
-//        try {
-//            authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(email, password)
-//            );
-//        } catch (BadCredentialsException ex) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-//                                 .body(Collections.singletonMap("message", "Invalid email or password"));
-//        }
-
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest user) {
         String email = user.getEmail();
@@ -142,7 +122,6 @@ public class AuthController {
  // register
     @PostMapping("/register")
     public void addUser(@Valid @RequestBody User user) {
-        
         userService.saveUser(user);
     }
 

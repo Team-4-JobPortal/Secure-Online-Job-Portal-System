@@ -38,25 +38,6 @@ public class ApplicationController {
     public Application GetByAppId(@PathVariable int id) {
     	return appService.findAppById(id);
     }
- 
-	/*
-	 * @PostMapping("/apply") public void saveApp(@RequestBody Application app) {
-	 * 
-	 * appService.saveApp(app); }
-	 */
-    
-    
-    @PutMapping("/{id}")
-    public void updateApp(@PathVariable int id, @RequestBody Application app) {
-    	app.setApplication_id(id);
-        appService.updateApp(app);
-    }
-    
-    
-    @DeleteMapping("/{id}")
-    public void deleteApp(@PathVariable int id) {
-    	appService.deleteApp(id);
-    }
     
     // Get current user's applications (for candidate dashboard)
     @GetMapping("/my-applications")
@@ -144,31 +125,6 @@ public class ApplicationController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error fetching stats: " + e.getMessage());
-        }
-    }
-
-    // Check if user has already applied to a specific job
-    @GetMapping("/check-applied/{jobId}")
-    public ResponseEntity<?> checkIfApplied(@PathVariable int jobId, Authentication authentication) {
-        try {
-            String email = authentication.getName();
-            User currentUser = userService.findByemail(email);
-            
-            if (currentUser == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("User not found!");
-            }
-            
-           boolean hasApplied = appService.hasUserAppliedToJob(currentUser.getUser_id(), jobId);
-            
-            Map<String, Boolean> response = new HashMap<>();
-            response.put("hasApplied", hasApplied);
-            
-            return ResponseEntity.ok(response);
-            
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error checking application status: " + e.getMessage());
         }
     }
     

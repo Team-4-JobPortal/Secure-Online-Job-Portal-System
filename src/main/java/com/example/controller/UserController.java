@@ -24,30 +24,7 @@ public class UserController {
     public List<User> listUsers() {
         return userService.findAllUsers();
     }
-
-    @GetMapping("/role/{role}")
-    public List<User> listUsersByRole(@PathVariable String role) {
-        return userService.findByUserRole(role);
-    }
-
-    @GetMapping("/{id}")
-    public User getByUserId(@PathVariable int id) {
-        return userService.findByUserId(id);
-    }
-
-    
-
-    @PutMapping("/{id}")
-    public void updateUser(@PathVariable int id, @RequestBody User user) {
-        user.setUser_id(id);
-        userService.updateUser(user);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable int id) {
-        userService.deleteUser(id);
-    }
-    
+    // update candidate profile
     @PutMapping("/update")
     public ResponseEntity<?> updateProfile(Authentication authentication, @RequestBody Map<String, String> body) {
         User user = userService.findByemail(authentication.getName());
