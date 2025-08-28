@@ -14,6 +14,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.dto.LoginRequest;
+import com.example.dto.UserDto;
+import com.example.entity.CandidateProfile;
+import com.example.entity.EmployerProfile;
 import com.example.entity.User;
 import com.example.security.JwtUtil;
 import com.example.service.UserService;
@@ -28,7 +31,7 @@ public class AuthController {
     
     @Autowired
     private UserService userService;
-
+    
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest user) {
         String email = user.getEmail();
@@ -68,8 +71,6 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
     }
-    
-    
     
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestBody User req) {
@@ -121,11 +122,42 @@ public class AuthController {
     
  // register
     @PostMapping("/register")
-    public void addUser(@Valid @RequestBody User user) {
-        userService.saveUser(user);
+    public ResponseEntity<?> addUser(@Valid @RequestBody UserDto user) {
+    	User udto=new User();
+    	udto.setRole(user.getRole());
+    	udto.setFirstName(user.getFirstName());
+    	udto.setLastName(user.getLastName());
+    	udto.setPhoneNumber(user.getPhoneNumber());
+    	udto.setEmail(user.getEmail());
+    	udto.setPassword(user.getPassword());
+    	
+    	if (user.getCandidateProfile() != null) {
+            CandidateProfile candidate = new CandidateProfile();
+            candidate.setCurrentLocation(user.getCandidateProfile().getCurrentLocation());
+            candidate.setSkills(user.getCandidateProfile().getSkills());
+            candidate.setExperienceLevel(user.getCandidateProfile().getExperienceLevel());
+
+            // link both sides
+            candidate.setUser(udto);
+            udto.setCandidateProfile(candidate);
+        }
+    	if (user.getEmployerProfile() != null) {
+    	    EmployerProfile employer = new EmployerProfile();
+    	    employer.setCompanyName(user.getEmployerProfile().getCompanyName());
+    	    employer.setCompanyDescription(user.getEmployerProfile().getCompanyDescription());
+    	    employer.setCurrentProfile(user.getEmployerProfile().getCurrentProfile());
+
+    	    // link both sides
+    	    employer.setUser(udto);
+    	    udto.setEmployerProfile(employer);
+    	}
+    	
+        userService.saveUser(udto);
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "success");
+        response.put("message", "User registered successfully");
+		return ResponseEntity.ok(response);
     }
-
-
     
 }
  

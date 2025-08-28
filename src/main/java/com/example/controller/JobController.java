@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.dto.ApplicationDto;
+import com.example.dto.JobDto;
 import com.example.entity.Application;
 import com.example.entity.Job;
 import com.example.entity.JobHistory;
@@ -49,7 +50,7 @@ public class JobController {
 	// Employer: Post Job
 	@PostMapping("/postJob")
 	@ResponseBody
-	public ResponseEntity<?> createJob(@Valid @RequestBody Job job, Authentication authentication) {
+	public ResponseEntity<?> createJob(@Valid @RequestBody JobDto job, Authentication authentication) {
 		String email = authentication.getName();
 		User dbUser = userService.findByemail(email);
 		if (dbUser == null) {
@@ -60,11 +61,17 @@ public class JobController {
 		if (!"employer".equalsIgnoreCase(dbUser.getRole())) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only Employer can post jobs!");
 		}
-
-		job.setUser(dbUser);
-		job.setCreatedAt(LocalDateTime.now());
+		Job j=new Job();
+		j.setTitle(job.getTitle());
+		j.setDescription(job.getDescription());
+		j.setLocation(job.getLocation());
+		j.setMin_salary(job.getMin_salary());
+		j.setMax_salary(job.getMax_salary());
+		j.setDeadline(job.getDeadline());
+		j.setUser(dbUser);
+		j.setCreatedAt(LocalDateTime.now());
 		// save job
-		jobService.createJob(job);
+		jobService.createJob(j);
 		System.out.println("Job posted successfully");
 		return ResponseEntity.ok("Job posted successfully");
 	}

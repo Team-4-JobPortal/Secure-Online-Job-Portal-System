@@ -28,7 +28,6 @@ public class Application {
     private String status;
     
     @Column(columnDefinition = "TEXT") // longer cover letters allowed
-    @Size(max=500,message="cover letter content can't be greater than 500 characters")
     private String coverLetter;
 
     @ManyToOne

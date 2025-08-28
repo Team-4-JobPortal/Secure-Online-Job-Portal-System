@@ -1,7 +1,8 @@
 package com.example.dao;
 
-import com.example.entity.Job;
 import java.util.List;
+
+import com.example.entity.Job;
 
 public interface JobDao {
 

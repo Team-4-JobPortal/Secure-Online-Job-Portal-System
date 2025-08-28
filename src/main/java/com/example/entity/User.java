@@ -17,31 +17,20 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int user_id;
-
+    
     private String role;
     
-    @NotBlank(message="First name is required")
     private String firstName;
     
-    @NotBlank(message="last name is required")
     private String lastName;
     
-    @NotBlank(message="phoneNumber is required")
     private String phoneNumber;
-    
-    @NotBlank(message="Email is required")
+   
     @Column(unique = true, nullable = false)
-    @Email(message = "provide a valid email address")
     private String email;
     
-    @NotBlank(message="password is required") 
-    @Pattern(
-    	    regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!?.]).{8,}$",
-    	    message = "Min 8 characters, must contain uppercase, lowercase, number, and special character"
-    	)
     private String password;
     
-  
     @Transient
     private String oldPassword;
 
