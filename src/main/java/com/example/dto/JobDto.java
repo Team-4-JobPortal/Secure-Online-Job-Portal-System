@@ -105,7 +105,7 @@ public class JobDto {
         this.deadline = deadline;
     }
 
-    // MISSING METHODS - Added isDeleted getter/setter
+    
     public Boolean getIsDeleted() {
         return isDeleted;
     }

@@ -14,7 +14,7 @@ public class ApplicationDto {
     private String status;
     
     @NotBlank(message = "cv is required")
-    @Size(max=500,message="cover letter content can't be greater than 500 characters")
+    @Size(max=255,message="cover letter content can't be greater than 255 characters")
     private String coverLetter;
     
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
