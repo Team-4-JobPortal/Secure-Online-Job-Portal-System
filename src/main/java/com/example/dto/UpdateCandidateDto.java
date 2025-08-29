@@ -19,7 +19,6 @@ public class UpdateCandidateDto {
     @Size(max = 15, message = "Phone number must not exceed 15 characters")
     @JsonAlias({ "phone", "phone_number", "mobile" })
     private String phoneNumber;
-
     
     @Valid   // important! ensures validation on nested CandidateDto
     private CandidateDto candidateProfile;

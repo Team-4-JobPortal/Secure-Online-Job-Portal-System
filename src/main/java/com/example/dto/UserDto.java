@@ -48,11 +48,10 @@ public class UserDto {
 
     private String newPassword;
     
-    @Valid   // 🔑 important! ensures validation on nested CandidateDto
+    @Valid   // important! ensures validation on nested CandidateDto
     private CandidateDto candidateProfile;
 
-
-    @Valid   // 🔑 important! ensures validation on nested CandidateDto
+    @Valid   // important! ensures validation on nested CandidateDto
     private EmployerDto employerProfile;
 
     

@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
     public void updatePassword(User user, String newPassword) {
         String encoded = passwordEncoder.encode(newPassword);
         user.setPassword(encoded);
-        userDAO.update(user); 
+        userDAO.update(user);
     }
 
     // Business logic methods with ResponseEntity for role validation
