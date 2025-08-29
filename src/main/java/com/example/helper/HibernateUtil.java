@@ -77,8 +77,4 @@ public class HibernateUtil {
             session.close(); // Still close the session manually
         }
     }
-
-    public interface HibernateTransactionCallback<T> {
-        T doInTransaction(Session session);
-    }
 }
