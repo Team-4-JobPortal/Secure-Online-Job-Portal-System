@@ -7,12 +7,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;
 
-
+/* 
+ * Custom UserDetailsService implementation for Spring Security authentication.
+ * Loads user information from database and converts to Spring Security UserDetails.
+ */
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
     private UserServiceImpl userServiceImpl;
 
+    /* 
+     * Loads user by email/username for authentication purposes.
+     * Converts database User entity to Spring Security UserDetails format.
+     * @param email The user's email address used as username
+     * @return UserDetails object containing user credentials and authorities
+     * @throws UsernameNotFoundException if user not found with given email
+     */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userServiceImpl.findByemail(email);

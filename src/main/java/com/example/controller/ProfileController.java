@@ -16,10 +16,14 @@ public class ProfileController {
     @Autowired
     private UserService userService;
 
+    /* 
+     * Retrieves the complete profile information for the authenticated user.
+     * Returns user details along with candidate/employer profile data.
+     * @param authentication Spring Security authentication context containing user details
+     * @return ResponseEntity with user profile data including personal info and role-specific details
+     */
     @GetMapping("/profile")
     public ResponseEntity<?> getProfile(Authentication authentication) {
-    return userService.getUserProfile(authentication);
+        return userService.getUserProfile(authentication);
     }
-    
-    
 }
