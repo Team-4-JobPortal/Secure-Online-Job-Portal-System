@@ -6,6 +6,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+
 public class UserDto {
 	@NotBlank(message = "Role is required")
     private String role;
@@ -19,7 +21,9 @@ public class UserDto {
     private String lastName;
 
     @NotBlank(message = "Phone number is required")
-    @Size(max = 15, message = "Phone number must not exceed 15 characters")
+    @Size(min = 10, max = 10, message = "Phone number must be exactly 10 digits")
+    @Pattern(regexp = "^[0-9]{10}$", message = "Phone number must contain only digits")
+    @JsonAlias({ "phone", "phone_number", "mobile" })
     private String phoneNumber;
 
     @NotBlank(message = "Email is required")
