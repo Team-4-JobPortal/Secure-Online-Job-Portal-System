@@ -24,6 +24,11 @@ public class UserDAOImpl implements UserDAO {
         this.hibernateUtil = hibernateUtil;
     }
 
+    /* 
+     * Retrieves all User entities from the database.
+     * Uses read-only session for optimal performance.
+     * @return List<User> containing all registered users
+     */
     @Override
     public List<User> findAll() {
         return hibernateUtil.executeReadOnly(session ->
@@ -31,6 +36,12 @@ public class UserDAOImpl implements UserDAO {
         );
     }
 
+    /* 
+     * Finds a specific User entity by its unique identifier.
+     * Uses read-only session as this is a query operation.
+     * @param id The unique identifier of the user
+     * @return User entity if found, null if not found
+     */
     @Override
     public User findById(int id) {
         return hibernateUtil.executeReadOnly(session ->
@@ -38,6 +49,12 @@ public class UserDAOImpl implements UserDAO {
         );
     }
 
+    /* 
+     * Retrieves all users with a specific role (e.g., 'candidate' or 'employer').
+     * Useful for role-based user management and statistics.
+     * @param role The role to filter users by
+     * @return List<User> containing users with the specified role
+     */
     @Override
     public List<User> findByRole(String role) {
         return hibernateUtil.executeReadOnly(session ->
@@ -47,7 +64,12 @@ public class UserDAOImpl implements UserDAO {
         );
     }
 
-    // emailExists used internally, use readOnly session
+    /* 
+     * Private helper method to check if an email address already exists.
+     * Prevents duplicate email registrations during user creation.
+     * @param email The email address to check
+     * @return boolean true if email exists, false otherwise
+     */
     private boolean emailExists(String email) {
         String hql = "SELECT 1 FROM User WHERE email = :email";
         return hibernateUtil.executeReadOnly(session ->
@@ -57,6 +79,13 @@ public class UserDAOImpl implements UserDAO {
         );
     }
 
+    /* 
+     * Persists a new User entity to the database with validation and encryption.
+     * Performs email uniqueness check, password encoding, and profile association.
+     * Handles both candidate and employer profile creation based on user role.
+     * @param user The User entity to be saved
+     * @throws UserEmailExistException if email address is already registered
+     */
     @Override
     public void save(User user) {
         hibernateUtil.executeInTransaction(session -> {
@@ -78,6 +107,12 @@ public class UserDAOImpl implements UserDAO {
         });
     }
 
+    /* 
+     * Updates an existing User entity and associated profiles.
+     * Maintains bidirectional relationships between User and Profile entities.
+     * Uses saveOrUpdate to handle both new and existing profile entities.
+     * @param user The User entity with updated information
+     */
     @Override
     public void update(User user) {
         hibernateUtil.executeInTransaction(session -> {
@@ -100,6 +135,11 @@ public class UserDAOImpl implements UserDAO {
         });
     }
 
+    /* 
+     * Permanently deletes a User entity from the database.
+     * Cascade deletion will also remove associated profile information.
+     * @param id The unique identifier of the user to delete
+     */
     @Override
     public void delete(int id) {
         hibernateUtil.executeInTransaction(session -> {
@@ -111,6 +151,13 @@ public class UserDAOImpl implements UserDAO {
         });
     }
 
+    /* 
+     * Finds a User entity by email address for authentication purposes.
+     * Email serves as unique identifier for login and user lookup.
+     * @param email The email address to search for
+     * @return User entity associated with the email
+     * @throws UserEmailNotFoundException if no user found with the given email
+     */
     @Override
     public User findByEmail(String email) {
         return hibernateUtil.executeReadOnly(session -> {

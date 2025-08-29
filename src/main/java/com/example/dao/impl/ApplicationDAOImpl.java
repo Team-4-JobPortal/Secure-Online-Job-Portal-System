@@ -20,6 +20,11 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         this.hibernateUtil = hibernateUtil;
     }
 
+    /* 
+     * Retrieves all Application records from the database.
+     * Uses read-only session for optimal performance.
+     * @return List<Application> containing all application entities
+     */
     @Override
     public List<Application> findAll() {
         return hibernateUtil.executeReadOnly(session ->
@@ -27,6 +32,12 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         );
     }
 
+    /* 
+     * Finds a specific Application entity by its unique identifier.
+     * Uses read-only session as this is a query operation.
+     * @param id The unique identifier of the application
+     * @return Application entity if found, null if not found
+     */
     @Override
     public Application findById(int id) {
         return hibernateUtil.executeReadOnly(session ->
@@ -34,6 +45,11 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         );
     }
 
+    /* 
+     * Persists a new Application entity to the database.
+     * Uses transactional session to ensure data integrity.
+     * @param application The Application entity to be saved
+     */
     @Override
     public void save(Application application) {
         hibernateUtil.executeInTransaction(session -> {
@@ -42,6 +58,11 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         });
     }
 
+    /* 
+     * Updates an existing Application entity in the database.
+     * Uses transactional session to ensure atomicity of the operation.
+     * @param application The Application entity with updated data
+     */
     @Override
     public void update(Application application) {
         hibernateUtil.executeInTransaction(session -> {
@@ -50,6 +71,11 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         });
     }
 
+    /* 
+     * Permanently deletes an Application entity from the database.
+     * Checks for entity existence before attempting deletion to prevent errors.
+     * @param id The unique identifier of the application to delete
+     */
     @Override
     public void delete(int id) {
         hibernateUtil.executeInTransaction(session -> {
@@ -61,6 +87,12 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         });
     }
 
+    /* 
+     * Retrieves all applications submitted by a specific user.
+     * Results are ordered by application ID in descending order (newest first).
+     * @param userId The unique identifier of the user
+     * @return List<Application> containing user's applications
+     */
     @Override
     public List<Application> findByUserId(int userId) {
         return hibernateUtil.executeReadOnly(session -> {
@@ -71,6 +103,13 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         });
     }
 
+    /* 
+     * Checks if a user has already applied for a specific job.
+     * Prevents duplicate applications by verifying existence.
+     * @param userId The unique identifier of the user
+     * @param jobId The unique identifier of the job
+     * @return boolean true if application exists, false otherwise
+     */
     @Override
     public boolean existsByUserIdAndJobId(int userId, int jobId) {
         return hibernateUtil.executeReadOnly(session -> {
@@ -83,6 +122,13 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         });
     }
 
+    /* 
+     * Retrieves all applications for jobs posted by a specific employer.
+     * Enables employers to view applications to their job postings.
+     * Results ordered by application ID in descending order (newest first).
+     * @param employerId The unique identifier of the employer
+     * @return List<Application> containing applications for employer's jobs
+     */
     @Override
     public List<Application> findApplicationsByEmployer(int employerId) {
         return hibernateUtil.executeReadOnly(session -> {

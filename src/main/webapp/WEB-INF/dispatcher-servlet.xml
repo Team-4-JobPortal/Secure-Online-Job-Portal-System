@@ -61,6 +61,7 @@
         <property name="url" value="jdbc:postgresql://localhost:5432/testdb" />
         <property name="username" value="postgres" />
         <property name="password" value="Y0ge$#12" />
+
     </bean>
 
     <!-- Hibernate SessionFactory -->

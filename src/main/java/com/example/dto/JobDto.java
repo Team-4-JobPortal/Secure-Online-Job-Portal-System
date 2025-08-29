@@ -105,7 +105,7 @@ public class JobDto {
         this.deadline = deadline;
     }
 
-    
+
     public Boolean getIsDeleted() {
         return isDeleted;
     }
