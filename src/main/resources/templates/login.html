@@ -674,9 +674,9 @@ $(document).ready(function(){
         if(data.status === 'success'){
           setCookie('token', data.token, 1);
           if(role === 'employer'){
-            window.location.href = '/employerDashboard';
+            window.location.href = '/Secure-Online-Job-Portal-System/employerDashboard';
           } else if(role === 'candidate'){
-            window.location.href = '/candidateDashboard';
+            window.location.href = '/Secure-Online-Job-Portal-System/candidateDashboard';
           } else {
             alert('Unknown user role.');
           }
