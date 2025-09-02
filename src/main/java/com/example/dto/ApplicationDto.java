@@ -3,11 +3,12 @@ package com.example.dto;
 import java.time.LocalDateTime;
 
 
-import javax.persistence.PrePersist;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import jakarta.persistence.PrePersist;
+import jakarta.validation.constraints.*;
 
 public class ApplicationDto {
 

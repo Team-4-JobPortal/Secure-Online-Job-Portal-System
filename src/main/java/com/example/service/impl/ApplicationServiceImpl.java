@@ -1,10 +1,10 @@
 package com.example.service.impl;
 
-import com.example.dao.ApplicationDAO;
 import com.example.dto.ApplicationDto;
 import com.example.entity.Application;
 import com.example.entity.Job;
 import com.example.entity.User;
+import com.example.repository.ApplicationRepository;
 import com.example.service.ApplicationService;
 import com.example.service.JobService;
 import com.example.service.UserService;
@@ -13,16 +13,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+/**
+ * Service implementation for Application management using Spring Data JPA repositories.
+ * Handles job application creation, retrieval, updating, and status management.
+ */
 @Service
+@Transactional
 public class ApplicationServiceImpl implements ApplicationService {
 
     @Autowired
-    private ApplicationDAO applicationDAO;
+    private ApplicationRepository applicationRepository;
     
     @Autowired
     private UserService userService;
@@ -31,23 +38,21 @@ public class ApplicationServiceImpl implements ApplicationService {
     private JobService jobService;
 
     @Override
+    @Transactional(readOnly = true)
     public List<Application> findAllApp() {
-        return applicationDAO.findAll();
+        return applicationRepository.findAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Application findAppById(int id) {
-        return applicationDAO.findById(id);
+        return applicationRepository.findById(id).orElse(null);
     }
 
     @Override
     public Application saveApp(int jobId, ApplicationDto request, Authentication authentication) {
         String email = authentication.getName();
         User dbUser = userService.findByemail(email);
-        
-        if (dbUser == null) {
-            throw new RuntimeException("User not found!");
-        }
         
         if (!"candidate".equalsIgnoreCase(dbUser.getRole())) {
             throw new RuntimeException("Only Candidates can apply for jobs!");
@@ -68,44 +73,42 @@ public class ApplicationServiceImpl implements ApplicationService {
         application.setCoverLetter(request.getCoverLetter().trim());
         application.setStatus("Pending");
         
-        applicationDAO.save(application);
-        return application;
+        return applicationRepository.save(application);
     }
 
     @Override
     public void updateApp(Application application) {
-        applicationDAO.update(application);
+        applicationRepository.save(application);
     }
 
     @Override
     public void deleteApp(int id) {
-        applicationDAO.delete(id);
+        applicationRepository.deleteById(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Application> findApplicationsByUser(int userId) {
-        return applicationDAO.findByUserId(userId);
+        return applicationRepository.findByUserId(userId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean hasUserAppliedToJob(int userId, int jobId) {
-        return applicationDAO.existsByUserIdAndJobId(userId, jobId);
+        return applicationRepository.existsByUserIdAndJobId(userId, jobId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Application> findApplicationsByEmployer(int employerId) {
-        return applicationDAO.findApplicationsByEmployer(employerId);
+        return applicationRepository.findApplicationsByEmployer(employerId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ResponseEntity<?> getMyApplications(Authentication authentication) {
         String email = authentication.getName();
         User currentUser = userService.findByemail(email);
-        
-        if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("User not found!");
-        }
         
         if (!"candidate".equalsIgnoreCase(currentUser.getRole())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -117,14 +120,10 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ResponseEntity<?> getApplicationsForMyJobs(Authentication authentication) {
         String email = authentication.getName();
         User currentUser = userService.findByemail(email);
-        
-        if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("User not found!");
-        }
         
         if (!"employer".equalsIgnoreCase(currentUser.getRole())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -136,14 +135,10 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ResponseEntity<?> getCandidateStats(Authentication authentication) {
         String email = authentication.getName();
         User currentUser = userService.findByemail(email);
-        
-        if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("User not found!");
-        }
         
         if (!"candidate".equalsIgnoreCase(currentUser.getRole())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -165,14 +160,10 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ResponseEntity<?> getEmployerStats(Authentication authentication) {
         String email = authentication.getName();
         User currentUser = userService.findByemail(email);
-        
-        if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("User not found!");
-        }
         
         if (!"employer".equalsIgnoreCase(currentUser.getRole())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -207,22 +198,18 @@ public class ApplicationServiceImpl implements ApplicationService {
         String email = authentication.getName();
         User currentUser = userService.findByemail(email);
         
-        if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("User not found!");
-        }
-        
         if (!"employer".equalsIgnoreCase(currentUser.getRole())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("Only employers can update application status!");
         }
         
-        Application application = findAppById(id);
-        if (application == null) {
+        Optional<Application> applicationOpt = applicationRepository.findById(id);
+        if (applicationOpt.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Application not found!");
         }
         
+        Application application = applicationOpt.get();
         if (application.getJob().getUser().getUser_id() != currentUser.getUser_id()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("You can only update applications for your own jobs!");
@@ -255,17 +242,13 @@ public class ApplicationServiceImpl implements ApplicationService {
         String email = authentication.getName();
         User currentUser = userService.findByemail(email);
         
-        if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("User not found!");
-        }
-        
-        Application application = findAppById(id);
-        if (application == null) {
+        Optional<Application> applicationOpt = applicationRepository.findById(id);
+        if (applicationOpt.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Application not found!");
         }
         
+        Application application = applicationOpt.get();
         if (application.getUser().getUser_id() != currentUser.getUser_id()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("You can only withdraw your own applications!");

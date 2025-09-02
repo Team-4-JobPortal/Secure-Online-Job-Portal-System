@@ -1,9 +1,7 @@
 package com.example.dto;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.*;
+
 import com.example.enums.ExperienceLevel;
 
 public class CandidateDto {

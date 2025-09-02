@@ -1,9 +1,13 @@
 package com.example.security;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
@@ -11,6 +15,7 @@ import java.io.IOException;
  * Entry point for handling authentication failures.
  * Sends 401 Unauthorized response when authentication is required but missing/invalid.
  */
+@Component
 public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
     
     /* 

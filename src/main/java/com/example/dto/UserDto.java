@@ -1,10 +1,8 @@
 package com.example.dto;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
+
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 
@@ -20,12 +18,6 @@ public class UserDto {
     @Size(max = 100, message = "Last name must not exceed 100 characters")
     private String lastName;
 
-	/*
-	 * @NotBlank(message = "Phone number is required")
-	 * 
-	 * @Size(max = 15, message = "Phone number must not exceed 15 characters")
-	 * private String phoneNumber;
-	 */
     
     @NotBlank(message = "Phone number is required")
     @Size(min = 10, max = 10, message = "Phone number must be exactly 10 digits")

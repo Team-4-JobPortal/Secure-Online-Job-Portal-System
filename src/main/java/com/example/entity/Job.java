@@ -1,6 +1,6 @@
 package com.example.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import java.sql.Date;
 import java.time.LocalDateTime;

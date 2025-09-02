@@ -3,7 +3,8 @@ package com.example.entity;
 import com.example.enums.ExperienceLevel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
 
 @Entity
 @Table(name = "CandidateProfiles")

@@ -3,7 +3,6 @@ package com.example.controller;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import com.example.dto.UpdateCandidateDto;
 import com.example.entity.User;
 import com.example.service.UserService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/users")

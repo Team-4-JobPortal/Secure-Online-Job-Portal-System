@@ -1,6 +1,5 @@
 package com.example.controller;
 
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +10,8 @@ import com.example.dto.LoginRequest;
 import com.example.dto.UserDto;
 import com.example.entity.User;
 import com.example.service.UserService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")

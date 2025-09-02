@@ -1,7 +1,6 @@
 package com.example.dto;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 public class EmployerDto {
     @NotBlank(message = "Company name is required")

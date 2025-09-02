@@ -5,13 +5,16 @@ import com.example.dto.JobDto;
 import com.example.entity.Job;
 import com.example.service.ApplicationService;
 import com.example.service.JobService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/jobs")

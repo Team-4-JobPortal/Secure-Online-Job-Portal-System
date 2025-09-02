@@ -2,7 +2,7 @@ package com.example.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "EmployerProfiles")
