@@ -9,8 +9,8 @@ System
 ### Documentation:
 [Click here to view the documentation](https://docs.google.com/document/d/1NFhxc6l14KKfGUhgpSWE4GOubjoei1ULN_RJSmgSZlk/edit?usp=sharing)
 
-### Github Hub Team Collab:
-[Click here to view the documentation](https://docs.google.com/document/d/1jMrTEW_3SKbdHrV4YL8oIocSOjNF3vat-R4PhHOatIw/edit?usp=sharing)
+### Frontend Pages:
+[Click here to view the documentation](https://docs.google.com/document/d/11uVIBfpZAnCf_9-5Z3SiZxztx8KzHQoBj374Yxe_A_I/edit?usp=sharing)
 
 ## Project Overview
 
