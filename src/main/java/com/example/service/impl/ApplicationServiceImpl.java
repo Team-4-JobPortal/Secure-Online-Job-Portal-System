@@ -82,6 +82,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional 
     public void deleteApp(int id) {
         applicationRepository.deleteById(id);
     }
@@ -238,12 +239,13 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional 
     public ResponseEntity<?> withdrawApplication(int id, Authentication authentication) {
         String email = authentication.getName();
         User currentUser = userService.findByemail(email);
         
         Optional<Application> applicationOpt = applicationRepository.findById(id);
-        if (applicationOpt.isPresent()) {
+        if (applicationOpt.isEmpty()) {  // ✅ Changed from isPresent() to isEmpty()
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Application not found!");
         }
@@ -262,4 +264,5 @@ public class ApplicationServiceImpl implements ApplicationService {
         deleteApp(id);
         return ResponseEntity.ok("Application withdrawn successfully!");
     }
+
 }

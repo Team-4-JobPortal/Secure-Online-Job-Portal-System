@@ -130,9 +130,10 @@ public class JobServiceImpl implements JobService {
         }
 
         Optional<Job> jobOpt = jobRepository.findById(id);
-        if (jobOpt.isPresent()) {
+        if (jobOpt.isEmpty()) {  // ✅ Correct logic
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Job not found!");
         }
+
         
         Job job = jobOpt.get();
         if (job.getUser().getUser_id() != currentUser.getUser_id()) {
@@ -147,7 +148,7 @@ public class JobServiceImpl implements JobService {
     @Transactional(readOnly = true)
     public ResponseEntity<?> getJobByIdWithValidation(int id) {
         Optional<Job> jobOpt = jobRepository.findById(id);
-        if (jobOpt.isPresent() || jobOpt.get().isDeleted()) {
+        if (jobOpt.isEmpty()) {  // ✅ Correct logic
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Job not found!");
         }
         return ResponseEntity.ok(jobOpt.get());

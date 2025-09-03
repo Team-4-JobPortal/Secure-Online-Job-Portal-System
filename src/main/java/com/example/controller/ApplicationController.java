@@ -31,7 +31,7 @@ public class ApplicationController {
      * @return Application entity matching the provided ID
      */
     @GetMapping("/{id}")
-    public Application getApplicationById(@PathVariable int id) {
+    public Application getApplicationById(@PathVariable("id")int id) {
         return appService.findAppById(id);
     }
     
@@ -73,7 +73,7 @@ public class ApplicationController {
      * @return ResponseEntity indicating success/failure of status update
      */
     @PutMapping("/{id}/status")
-    public ResponseEntity<?> updateApplicationStatus(@PathVariable int id, 
+    public ResponseEntity<?> updateApplicationStatus(@PathVariable("id") int id, 
                                                    @RequestParam String status, 
                                                    Authentication authentication) {
         return appService.updateApplicationStatus(id, status, authentication);
@@ -96,7 +96,7 @@ public class ApplicationController {
      * @return ResponseEntity indicating success/failure of withdrawal operation
      */
     @DeleteMapping("/{id}/withdraw")
-    public ResponseEntity<?> withdrawApplication(@PathVariable int id, Authentication authentication) {
+    public ResponseEntity<?> withdrawApplication(@PathVariable("id") int id, Authentication authentication) {
         return appService.withdrawApplication(id, authentication);
     }
 }

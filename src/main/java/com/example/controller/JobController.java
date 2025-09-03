@@ -46,7 +46,7 @@ public class JobController {
      * @return ResponseEntity indicating success or failure of deletion
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteJob(@PathVariable int id, Authentication authentication) {
+    public ResponseEntity<?> deleteJob(@PathVariable("id") int id, Authentication authentication) {
         return jobService.deleteJobWithValidation(id, authentication);
     }
 
@@ -70,10 +70,10 @@ public class JobController {
      * @return List<Job> matching the search criteria
      */
     @GetMapping("/search")
-    public List<Job> searchJobs(@RequestParam(required = false) String keyword,
-                               @RequestParam(required = false) String location, 
-                               @RequestParam(required = false) String minSalary,
-                               @RequestParam(required = false) String maxSalary) {
+    public List<Job> searchJobs(@RequestParam(name = "keyword", required = false) String keyword,
+                               @RequestParam(name = "location", required = false) String location, 
+                               @RequestParam(name = "minSalary", required = false) String minSalary,
+                               @RequestParam(name = "maxSalary", required = false) String maxSalary) {
         int min = (minSalary == null || minSalary.isEmpty()) ? 0 : Integer.parseInt(minSalary);
         int max = (maxSalary == null || maxSalary.isEmpty()) ? 0 : Integer.parseInt(maxSalary);
         return jobService.searchJobs(keyword, location, min, max);
@@ -86,7 +86,7 @@ public class JobController {
      * @return ResponseEntity with job details or error message
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getJobById(@PathVariable int id) {
+    public ResponseEntity<?> getJobById(@PathVariable("id") int id) {
         return jobService.getJobByIdWithValidation(id);
     }
 
@@ -121,7 +121,7 @@ public class JobController {
      * @return ResponseEntity indicating successful application submission or error
      */
     @PostMapping("/{jobId}/apply")
-    public ResponseEntity<?> applyForJob(@PathVariable int jobId, 
+    public ResponseEntity<?> applyForJob(@PathVariable("jobId") int jobId, 
                                        @Valid @RequestBody ApplicationDto request,
                                        Authentication authentication) {
         try {
