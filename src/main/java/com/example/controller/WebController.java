@@ -41,26 +41,24 @@ public class WebController {
      * Serve the candidate dashboard
      * @return candidate-dashboard.html template
      */
-    @GetMapping("/candidate-dashboard")
+    @GetMapping("/candidateDashboard")
     public String candidateDashboard() {
-        return "candidate-dashboard";
+        return "CandidateDashboard";
     }
 
     /**
      * Serve the employer dashboard
      * @return employer-dashboard.html template
      */
-    @GetMapping("/employer-dashboard")
+    @GetMapping("/employerDashboard")
     public String employerDashboard() {
-        return "employer-dashboard";
+        return "EmployerDashboard";
+    }
+    
+    @GetMapping("/forgetPassword")
+    public String changePassword() {
+        return "EmployerDashboard";
     }
 
-    /**
-     * Serve the job details page
-     * @return job-details.html template
-     */
-    @GetMapping("/job-details")
-    public String jobDetails() {
-        return "job-details";
-    }
+    
 }
